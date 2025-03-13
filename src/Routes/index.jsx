@@ -1,15 +1,29 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 // import ProtectedRoute from './ProtectedRoute'
 import MainLayout from '../layout/MainLayout'
 import SocialAccounts from '@/pages/View/Social-Accounts/SocialAccounts'
-import SocialFilterInterface from '@/pages/View/Social-Search/SocialSearch'
+import SocialSearch from '@/pages/View/Social-Search/SocialSearch'
 import CampaignPage from '@/pages/View/Campaigns/CampaignPage'
 import { CampaignProvider } from '@/pages/View/Campaigns/CampaignContext'
 import AuthLayout from '../layout/AuthLayout'
 import LoginForm from '@/components/Login'
 import SignupForm from '@/components/Signup'
+import { FilterProvider } from '@/pages/View/Social-Search/FilterContext'
+
 const AppRouter = () => {
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type) => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(null);
+    }, 3000);
+  };
+
+  const handleCloseToast = () => {
+    setToast(null);
+  };
   return (
     <Routes>
       <Route path="/auth" element={<AuthLayout />}>
@@ -18,12 +32,16 @@ const AppRouter = () => {
       </Route>
       <Route path="/" element={
         // <ProtectedRoute>
-          <MainLayout />
+        <MainLayout />
         // {/* </ProtectedRoute> */}
       }>
         <Route index element={<SocialAccounts />} />
         <Route path="Social-Accounts" element={<SocialAccounts />} />
-        <Route path="Social-Search" element={<SocialFilterInterface />} />
+        <Route path="Social-Search" element={
+          <FilterProvider showToast={showToast} >
+            <SocialSearch handleCloseToast={handleCloseToast} toast={toast}/>
+          </FilterProvider>
+        } />
         <Route path="Campaigns" element={
           <CampaignProvider>
             <CampaignPage />

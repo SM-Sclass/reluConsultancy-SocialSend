@@ -45,68 +45,8 @@ const PlatformTable = ({ buttonFunction }) => {
 
     setData(uniqueData);
   };
-  const getPlatformIcon = (platform) => {
-    switch (platform.toLowerCase()) {
-      case 'instagram':
-        return <Instagram className="w-5 h-5" />;
-      case 'facebook':
-        return <Facebook className="w-5 h-5" />;
-      case 'twitter':
-        return <Twitter className="w-5 h-5" />;
-      case 'tiktok':
-        return <span className="font-bold text-lg">𝓣</span>;
-      default:
-        return null;
-    }
-  };
-
-  const handleClick = (username) => (e) => {
-    e.preventDefault();
-    buttonFunction(username);
-  };
+  
   // ...existing fetchAndTransformData and useEffect code...
-
-  const columns = [
-    {
-      key: 'platform',
-      header: 'Platform',
-      render: (row) => (
-        <div className="flex items-center">
-          {getPlatformIcon(row.platform)}
-          <span className="ml-2 text-sm text-primary">{row.platform}</span>
-        </div>
-      )
-    },
-    {
-      key: 'username',
-      header: 'Username',
-      render: (row) => (
-        <button
-          onClick={handleClick(row.username)}
-          className="text-sm text-primary text-start hover:text-blue-500 w-full"
-        >
-          {row.username}
-        </button>
-      )
-    },
-    {
-      key: 'dailyMessages',
-      header: 'Daily Messages'
-    },
-    {
-      key: 'dailyConnections',
-      header: 'Daily Connections'
-    },
-    {
-      key: 'warmupEnabled',
-      header: 'Warmup Enabled',
-      render: (row) => (
-        <span className={row.warmupEnabled ? "text-green-600" : "text-red-600"}>
-          {row.warmupEnabled ? "Yes" : "No"}
-        </span>
-      )
-    }
-  ];
 
   const handleRowSelect = (row, isSelected) => {
     setSelectedAccounts(prev => 
@@ -140,14 +80,14 @@ const PlatformTable = ({ buttonFunction }) => {
         </div>
       )}
       
-      <Table
+      {/* <Table
         columns={columns}
         data={userArray}
         onRowSelect={handleRowSelect}
         onSelectAll={handleSelectAll}
         selectable={true}
         className="w-full"
-      />
+      /> */}
     </div>
   );
 };

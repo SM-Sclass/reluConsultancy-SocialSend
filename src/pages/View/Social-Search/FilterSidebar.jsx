@@ -4,13 +4,7 @@ import FilterSection from './FilterSection';
 import { FilterContext } from './FilterContext';
 import { FILTERS_CONFIG } from './FilterFieldConfig';
 
-const FilterSidebar = () => {
-  const { resetFilters, loading, applyFilters, filters } = useContext(FilterContext);
-  
-  const handleApplyFilters = () => {
-    console.log("Current filters before applying:", filters);
-    applyFilters();
-  };
+const FilterSidebar = ({ resetFilters, loading, handleApplyFilters }) => {
 
   return (
     <div className="w-full sm:w-64  sm:border-r  sm:border-gray-200 p-4 h-full overflow-y-auto">
