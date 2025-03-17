@@ -21,7 +21,7 @@ export const FilterProvider = ({ children, showToast }) => {
   });
 
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [filterId, setFilterId] = useState('');
+  const [filterId, setFilterId] = useState('67d849ac9b6a61db89174ab7');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

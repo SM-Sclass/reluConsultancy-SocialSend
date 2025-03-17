@@ -9,8 +9,10 @@ import {
   GoogleAuthProvider, 
   FacebookAuthProvider 
 } from 'firebase/auth';
-import { auth } from '../lib/firebase/config';
+import { auth, db } from '../lib/firebase/config';
 import { useNavigate } from 'react-router-dom';
+import { doc, setDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore';
+
 
 // Zod schema for form validation
 const loginSchema = z.object({
@@ -33,12 +35,58 @@ const LoginForm = () => {
     }
   });
 
+  const saveUserToFirestore = async (user) => {
+    try {
+      // Create/update user document
+
+      if (!user || !user.uid) {
+        console.error('Invalid user object:', user);
+        return;
+      }
+
+      const userData = {
+        uid: user.uid,
+        email: user.email || '',
+        displayName: user.displayName || '',
+        photoURL: user.photoURL || '',
+        lastLogin: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+
+      const userRef = doc(db, 'users', user.uid);
+      const setDocResponse = await setDoc(userRef, userData, { merge: true }); // Using merge to update existing data without overwriting
+
+      console.log('User document written with ID:', setDocResponse);
+
+      // Log login event
+      const logData = {
+        userId: user.uid,
+        email: user.email || '',
+        event: 'login',
+        timestamp: serverTimestamp()
+      };
+      
+      // Only add provider if available
+      if (user.providerData && user.providerData.length > 0) {
+        logData.provider = user.providerData[0].providerId;
+      }
+      await addDoc(collection(db, 'userLogs'), logData);
+
+    } catch (err) {
+      console.error('Error saving user data to Firestore:', err);
+      // Don't throw error here to avoid blocking the authentication flow
+    }
+    finally {
+      setLoading(false);
+    }
+  };
+
   const onSubmit = async (data) => {
     try {
       setLoading(true);
       setError('');
       await signInWithEmailAndPassword(auth, data.email, data.password);
-      navigate('/dashboard'); // Redirect to dashboard after successful login
+      navigate('/Social-Accounts'); // Redirect to dashboard after successful login
     } catch (err) {
       console.error('Login error:', err);
       setError(err.message || 'Failed to login. Please try again.');
@@ -54,6 +102,8 @@ const LoginForm = () => {
       const provider = new GoogleAuthProvider();
       const googleAuthResponse = await signInWithPopup(auth, provider);
       console.log('Google Auth Response:', googleAuthResponse);
+
+      await saveUserToFirestore(googleAuthResponse.user);
       navigate('/Social-Accounts');
     } catch (err) {
       console.error('Google sign-in error:', err);
@@ -70,6 +120,8 @@ const LoginForm = () => {
       const provider = new FacebookAuthProvider();
       const facebookAuthResponse = await signInWithPopup(auth, provider);
       console.log('Facebook Auth Response:', facebookAuthResponse);
+
+      await saveUserToFirestore(facebookAuthResponse.user);
       navigate('/dashboard');
     } catch (err) {
       console.error('Facebook sign-in error:', err);

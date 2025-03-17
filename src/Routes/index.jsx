@@ -35,7 +35,6 @@ const AppRouter = () => {
         <MainLayout />
         // {/* </ProtectedRoute> */}
       }>
-        <Route index element={<SocialAccounts />} />
         <Route path="Social-Accounts" element={<SocialAccounts />} />
         <Route path="Social-Search" element={
           <FilterProvider showToast={showToast} >

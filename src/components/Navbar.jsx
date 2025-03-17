@@ -1,4 +1,5 @@
 import {useState, useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Disclosure,
   DisclosureButton,
@@ -8,7 +9,10 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon, SunIcon, MoonIcon } from "@heroicons/react/24/outline";
+import { BellIcon, SunIcon, MoonIcon } from "@heroicons/react/24/outline";
+import { signOut } from 'firebase/auth';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from "@/lib/firebase/config";
 import Logo from "../assets/Social Send.svg";
 import { useTheme } from "./theme-provider";
 import { useSidebar } from "./SidebarContext";
@@ -28,7 +32,7 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const { toggleSidebar, toggleCollapse } = useSidebar();
   const [isMobile, setIsMobile] = useState(false);
-
+  const navigate = useNavigate();
   // Detect if we're on mobile
   useEffect(() => {
     const checkIsMobile = () => {
@@ -55,6 +59,28 @@ export default function Navbar() {
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
+
+  const handleLogOut = async() => {
+    try {
+      const user = auth.currentUser;
+    
+    if (user) {
+      // Log logout event in Firestore
+      await addDoc(collection(db, 'userLogs'), {
+        userId: user.uid,
+        email: user.email,
+        event: 'logout',
+        timestamp: serverTimestamp()
+      });
+    }
+    
+    // Sign out the user
+    await signOut(auth);
+    navigate('/auth/login')
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  }
 
   return (
     <Disclosure as="nav" className="bg-muted border border-border">
@@ -168,12 +194,12 @@ export default function Navbar() {
                   </a>
                 </MenuItem>
                 <MenuItem>
-                  <a
-                    href="#"
+                  <div
                     className="block px-4 py-2 text-sm text-popover-foreground data-[focus]:bg-accent data-[focus]:outline-none"
+                    onClick={handleLogOut}
                   >
                     Sign out
-                  </a>
+                  </div>
                 </MenuItem>
               </MenuItems>
             </Menu>

@@ -8,7 +8,7 @@ export const filterUsers = async(filterData) => {
             ...filterData
         });
         
-        if (!response.ok) {
+        if (response.status !== 200) {
             throw new Error('Filter request failed');
         }
 

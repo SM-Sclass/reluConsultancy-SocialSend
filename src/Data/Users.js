@@ -9,10 +9,10 @@ export const userArray = [{
             firstName: "Col",
             lastname: "Harris",
         },
-        Sendermessage: 'Hi {username}!',
-        Daily_Friend_Request_Limit: 45,
-        Daily_Like_Limit: 210,
-        Daily_Direct_Message_Limit: 51,
+        Sendermessage: 'Hi! how are you?',
+        Daily_Friend_Request_Limit: 10,
+        Daily_Like_Limit: 10,
+        Daily_Direct_Message_Limit: 10,
     },
 }];
 export const defaultUserStructure = (username) => ({
