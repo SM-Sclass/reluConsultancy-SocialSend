@@ -9,7 +9,7 @@ export const userArray = [{
             firstName: "Col",
             lastname: "Harris",
         },
-        Sendermessage: 'Hi! how are you?',
+        Sendermessage: 'Hello, how you doing there?',
         Daily_Friend_Request_Limit: 10,
         Daily_Like_Limit: 10,
         Daily_Direct_Message_Limit: 10,

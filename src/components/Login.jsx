@@ -1,18 +1,19 @@
 // src/components/LoginForm.jsx
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { 
-  signInWithEmailAndPassword, 
-  signInWithPopup, 
-  GoogleAuthProvider, 
-  FacebookAuthProvider 
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  FacebookAuthProvider
 } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { Eye, EyeOff } from "lucide-react";
+import { signUpApi } from './Signup';
 import { auth, db } from '../lib/firebase/config';
-import { useNavigate } from 'react-router-dom';
-import { doc, setDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore';
-
 
 // Zod schema for form validation
 const loginSchema = z.object({
@@ -21,11 +22,13 @@ const loginSchema = z.object({
   rememberMe: z.boolean().optional()
 });
 
+
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  
+
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -35,46 +38,21 @@ const LoginForm = () => {
     }
   });
 
-  const saveUserToFirestore = async (user) => {
-    try {
-      // Create/update user document
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  }
 
-      if (!user || !user.uid) {
+  const saveUserToFirestore = async (userData) => {
+    try {
+      if (!userData || !userData.uid) {
         console.error('Invalid user object:', user);
         return;
       }
 
-      const userData = {
-        uid: user.uid,
-        email: user.email || '',
-        displayName: user.displayName || '',
-        photoURL: user.photoURL || '',
-        lastLogin: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      };
-
-      const userRef = doc(db, 'users', user.uid);
-      const setDocResponse = await setDoc(userRef, userData, { merge: true }); // Using merge to update existing data without overwriting
-
-      console.log('User document written with ID:', setDocResponse);
-
-      // Log login event
-      const logData = {
-        userId: user.uid,
-        email: user.email || '',
-        event: 'login',
-        timestamp: serverTimestamp()
-      };
-      
-      // Only add provider if available
-      if (user.providerData && user.providerData.length > 0) {
-        logData.provider = user.providerData[0].providerId;
-      }
-      await addDoc(collection(db, 'userLogs'), logData);
-
+      const userRef = doc(db, 'users', userData.uid);
+      await setDoc(userRef, userData, { merge: true }); // Using merge to update existing data without overwriting
     } catch (err) {
-      console.error('Error saving user data to Firestore:', err);
-      // Don't throw error here to avoid blocking the authentication flow
+      setError(err.message || 'Failed to save user data. Please try again.');
     }
     finally {
       setLoading(false);
@@ -85,7 +63,9 @@ const LoginForm = () => {
     try {
       setLoading(true);
       setError('');
+      console.log(data)
       await signInWithEmailAndPassword(auth, data.email, data.password);
+
       navigate('/Social-Accounts'); // Redirect to dashboard after successful login
     } catch (err) {
       console.error('Login error:', err);
@@ -101,9 +81,28 @@ const LoginForm = () => {
       setError('');
       const provider = new GoogleAuthProvider();
       const googleAuthResponse = await signInWithPopup(auth, provider);
-      console.log('Google Auth Response:', googleAuthResponse);
+      const user = googleAuthResponse.user;
 
-      await saveUserToFirestore(googleAuthResponse.user);
+      const userRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userRef);
+      if (!userDoc.exists()) {
+        const body = {
+          email: user.email,
+          username: user.displayName
+        }
+        const response = await signUpApi(body);
+        const userData = {
+          user_id: response.user_id,
+          uid: user.uid,
+          email: user.email || '',
+          displayName: user.displayName || '',
+          photoURL: user.photoURL || '',
+          lastLogin: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        };
+        await saveUserToFirestore(userData);
+      }
+
       navigate('/Social-Accounts');
     } catch (err) {
       console.error('Google sign-in error:', err);
@@ -119,9 +118,28 @@ const LoginForm = () => {
       setError('');
       const provider = new FacebookAuthProvider();
       const facebookAuthResponse = await signInWithPopup(auth, provider);
-      console.log('Facebook Auth Response:', facebookAuthResponse);
+      const user = facebookAuthResponse.user;
 
-      await saveUserToFirestore(facebookAuthResponse.user);
+      const userRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userRef);
+      if (!userDoc.exists()) {
+        const body = {
+          email: user.email,
+          username: user.displayName
+        }
+        const response = await signUpApi(body);
+        const userData = {
+          user_id: response.user_id,
+          uid: user.uid,
+          email: user.email || '',
+          displayName: user.displayName || '',
+          photoURL: user.photoURL || '',
+          lastLogin: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        };
+        await saveUserToFirestore(userData);
+      }
+
       navigate('/dashboard');
     } catch (err) {
       console.error('Facebook sign-in error:', err);
@@ -157,19 +175,17 @@ const LoginForm = () => {
 
         <div className="mb-4 relative">
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Password"
             className={`w-full p-3 border rounded-md ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
             {...register('password')}
           />
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="absolute right-3 top-3 text-gray-400"
-            onClick={() => {
-              // Toggle password visibility logic would go here
-            }}
+            onClick={togglePasswordVisibility}
           >
-            👁️
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
           {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
         </div>
@@ -203,7 +219,7 @@ const LoginForm = () => {
           type="button"
           onClick={handleFacebookSignIn}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-muted border border-gray-300 py-3 rounded-md hover:bg-secondary transition-colors"
+          className="w-full flex items-center justify-center gap-2 bg-muted border border-muted py-3 rounded-md hover:bg-secondary transition-colors"
         >
           <span className="text-blue-600">f</span>
           <span>Login with Facebook</span>
@@ -213,7 +229,7 @@ const LoginForm = () => {
           type="button"
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-muted border border-gray-300 py-3 rounded-md hover:bg-secondary transition-colors"
+          className="w-full flex items-center justify-center gap-2 bg-muted border border-muted py-3 rounded-md hover:bg-secondary transition-colors"
         >
           <span className="text-red-500">G</span>
           <span>Login with Google</span>
@@ -222,7 +238,7 @@ const LoginForm = () => {
 
       <div className="text-center mt-6">
         <p className="text-primary">
-          Don't have an account? <a href="/signup" className="text-blue-600 hover:underline">Sign Up</a>
+          Don't have an account? <a href="/auth/signup" className="text-blue-600 hover:underline">Sign Up</a>
         </p>
       </div>
     </div>

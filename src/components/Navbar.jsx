@@ -11,8 +11,7 @@ import {
 } from "@headlessui/react";
 import { BellIcon, SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 import { signOut } from 'firebase/auth';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from "@/lib/firebase/config";
+import { auth } from "@/lib/firebase/config";
 import Logo from "../assets/Social Send.svg";
 import { useTheme } from "./theme-provider";
 import { useSidebar } from "./SidebarContext";
@@ -62,18 +61,6 @@ export default function Navbar() {
 
   const handleLogOut = async() => {
     try {
-      const user = auth.currentUser;
-    
-    if (user) {
-      // Log logout event in Firestore
-      await addDoc(collection(db, 'userLogs'), {
-        userId: user.uid,
-        email: user.email,
-        event: 'logout',
-        timestamp: serverTimestamp()
-      });
-    }
-    
     // Sign out the user
     await signOut(auth);
     navigate('/auth/login')

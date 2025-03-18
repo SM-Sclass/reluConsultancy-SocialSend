@@ -90,9 +90,7 @@ export const FilterProvider = ({ children, showToast }) => {
       // console.log('New fetched filtered accounts:', newFetchedFilteredAccounts);
       try {
         // Fixed query invalidation with proper format
-        await queryClient.invalidateQueries({ 
-          queryKey: ['filteredUserAccounts', newFilterId] 
-        });
+
         console.log('Query invalidated successfully');
       } catch (err) {
         console.error('Error invalidating query:', err);
@@ -107,7 +105,7 @@ export const FilterProvider = ({ children, showToast }) => {
 
       // Show error toast if showToast function is provided
       if (showToast) {
-        showToast('Failed to apply filters: ' + (err.message || 'Unknown error'), 'error');
+        showToast((err.response.data.result || 'Unknown error'), 'error');
       }
     } finally {
       setLoading(false);
