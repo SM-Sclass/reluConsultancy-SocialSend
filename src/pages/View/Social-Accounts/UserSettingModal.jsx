@@ -330,7 +330,7 @@ const SettingsContent = ({ username, onClose }) => {
             name="firstName"
             placeholder="First Name"
             className="flex-1 p-2 border rounded border-primary"
-            value={formData.first_name}
+            defaultValue={formData.first_name}
             onChange={handleInputChange}
           />
           <input
@@ -338,7 +338,7 @@ const SettingsContent = ({ username, onClose }) => {
             name="lastName"
             placeholder="Last Name"
             className="flex-1 p-2 border rounded border-primary"
-            value={formData.last_name}
+            defaultValue={formData.last_name}
             onChange={handleInputChange}
           />
         </div>
@@ -363,7 +363,7 @@ const SettingsContent = ({ username, onClose }) => {
           <textarea
             name="senderMessage"
             className="w-full p-2 min-h-[100px] resize-none border border-primary"
-            value={formData.message}
+            defaultValue={formData.message}
             onChange={handleInputChange}
           />
         </div>
@@ -379,7 +379,7 @@ const SettingsContent = ({ username, onClose }) => {
             <input
               type="number"
               name="friendRequestLimit"
-              value={formData.follow_limit}
+              defaultValue={formData.follow_limit}
               onChange={handleInputChange}
               className="w-full p-2 border rounded border-primary"
             />
@@ -392,7 +392,7 @@ const SettingsContent = ({ username, onClose }) => {
             <input
               type="number"
               name="likeLimit"
-              value={formData.like_limit}
+              defaultValue={formData.like_limit}
               onChange={handleInputChange}
               className="w-full p-2 border rounded border-primary"
             />
@@ -405,7 +405,7 @@ const SettingsContent = ({ username, onClose }) => {
             <input
               type="number"
               name="dm_limit"
-              value={formData.dm_limit}
+              defaultValue={formData.dm_limit}
               onChange={handleInputChange}
               className="w-full p-2 border rounded border-primary"
             />
