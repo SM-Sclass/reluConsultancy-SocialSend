@@ -309,6 +309,9 @@ const SettingsContent = ({ username, onClose }) => {
     //   };
     // }
     // console.log('Settings saved for user:', username);
+    formData.follow_limit = Number(formData.follow_limit);
+    formData.like_limit = Number(formData.like_limit);
+    formData.dm_limit = Number(formData.dm_limit);
     await sendTemplateMessage(formData)
   };
 
