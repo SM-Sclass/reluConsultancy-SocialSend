@@ -66,17 +66,17 @@ const SocialAccounts = () => {
       accessorKey: 'platform',
       header: 'Platform',
       cell: ({ row }) => {
-        return( <div className="flex items-center">
+        return (<div className="flex items-center">
           <span className="ml-2 text-sm text-primary">{row.getValue('platform')}</span>
         </div>)
-        }
+      }
     },
     {
       accessorKey: 'username',
       header: 'Username',
       cell: ({ row }) => {
-        return <button onClick={()=>setSelectedUser(row.getValue('username'))}
-          className="text-sm text-primary text-start hover:text-blue-500 w-full"
+        return <button onClick={() => setSelectedUser(row.getValue('username'))}
+          className="text-sm text-primary flex  hover:text-blue-500 w-full"
         >
           {row.getValue('username')}
         </button>
@@ -85,23 +85,35 @@ const SocialAccounts = () => {
     },
     {
       accessorKey: 'dailyMessages',
-      header: 'Daily Messages'
+      header: 'Daily Messages',
+      cell: ({ row }) => {
+        return (<span className="text-primary flex">
+          {row.getValue('dailyMessages')}
+        </span>
+        )
+      }
     },
     {
       accessorKey: 'dailyConnections',
-      header: 'Daily Connections'
+      header: 'Daily Connections',
+      cell: ({ row }) => {
+        return (<span className="text-primary flex">
+          {row.getValue('dailyConnections')}
+        </span>
+      )
+    }
     },
     {
       accessorKey: 'warmupEnabled',
       header: 'Warmup Enabled',
-      cell: ({ row }) => (
-        <span className={row.warmupEnabled ? "text-green-600" : "text-red-600"}>
-          {row.warmupEnabled ? "Yes" : "No"}
+      cell: ({ row }) => {
+        return (<span className={`flex ${row.getValue('warmupEnabled') ? 'text-green-600' : 'text-red-600'}`}>
+          {row.getValue('warmupEnabled') ? 'Yes' : 'No'}
         </span>
       )
     }
+    }
   ];
-
 
   const table = useReactTable({
     data: userArray || [],
@@ -127,7 +139,7 @@ const SocialAccounts = () => {
 
   return (
     <div className='w-full'>
-      <Breadcrumb onClickFunction={() => { setShowPopUp(true) }} pageName="Social Accounts" availableEntries="67" table={table} columns={columns} />
+      <Breadcrumb onClickFunction={() => { setShowPopUp(true) }} pageName="Social Accounts" availableEntries="67" table={table} columns={columns} buttonName="Add New" />
       <Listing
         columns={columns}
         table={table}

@@ -1,7 +1,6 @@
-import React, { useContext } from 'react';
-import { RefreshCcw, Filter, Loader, Save } from 'lucide-react';
+import React from 'react';
+import { RefreshCcw, Loader, Save } from 'lucide-react';
 import FilterSection from './FilterSection';
-import { FilterContext } from './FilterContext';
 import { FILTERS_CONFIG } from './FilterFieldConfig';
 
 const FilterSidebar = ({ resetFilters, loading, handleApplyFilters }) => {
@@ -31,7 +30,7 @@ const FilterSidebar = ({ resetFilters, loading, handleApplyFilters }) => {
               {loading ? (
                 <Loader className="w-4 h-4 animate-spin" />
               ) : (
-                <Filter className="w-4 h-4" />
+                ""
               )}
             </div>
           </div>

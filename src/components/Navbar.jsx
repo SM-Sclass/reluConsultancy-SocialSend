@@ -9,7 +9,7 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
-import { BellIcon, SunIcon, MoonIcon } from "@heroicons/react/24/outline";
+import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 import { signOut } from 'firebase/auth';
 import { auth } from "@/lib/firebase/config";
 import Logo from "../assets/Social Send.svg";
@@ -138,14 +138,14 @@ export default function Navbar() {
               )}
             </button>
 
-            <button
+            {/* <button
               type="button"
               className="relative rounded-full p-1 ml-3 text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-background border-0"
             >
               <span className="absolute -inset-1.5" />
               <span className="sr-only">View notifications</span>
               <BellIcon aria-hidden="true" className="size-6" />
-            </button>
+            </button> */}
 
             {/* Profile dropdown */}
             <Menu as="div" className="relative ml-3">

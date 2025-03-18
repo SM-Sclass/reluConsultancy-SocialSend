@@ -79,6 +79,7 @@ const SocialSearch = ({ toast, handleCloseToast }) => {
         availableEntries=""
         table={table}
         columns={columns}
+        buttonName="Saved Filters"
       />
       <SideTab
         isOpen={isSideTabOpen}

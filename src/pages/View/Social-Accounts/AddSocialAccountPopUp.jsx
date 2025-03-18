@@ -113,12 +113,12 @@ const AddSocialAccountPopup = ({ onClose }) => {
 
 
   const InstagramCredentialsModal = () => (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-20">
-      <div className="bg-white rounded-lg shadow-lg w-96 p-6">
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 z-20">
+      <div className="bg-secondary rounded-lg shadow-lg w-96 p-6">
         <h3 className="text-lg font-medium mb-4">Choose Credentials Source</h3>
         <div className="space-y-4">
           <button
-            className="w-full p-3 border rounded-lg hover:bg-gray-50"
+            className="w-full p-3 border rounded-lg hover:bg-muted"
             onClick={() => {
               if (csvData) {
                 handleCsvCredentialsUse();
@@ -132,7 +132,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
             {csvData ? `(${csvData.length} accounts)` : ""}
           </button>
           <button
-            className="w-full p-3 border rounded-lg hover:bg-gray-50"
+            className="w-full p-3 border rounded-lg hover:bg-muted"
             onClick={() => {
               setCredentialsSource("manual");
               setShowInstagramModal(false);
@@ -143,7 +143,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
           </button>
         </div>
         <button
-          className="mt-4 text-gray-500 hover:text-black"
+          className="mt-4 text-gray-500 hover:text-primary"
           onClick={() => setShowInstagramModal(false)}
         >
           Cancel
@@ -300,10 +300,10 @@ const AddSocialAccountPopup = ({ onClose }) => {
 
     return (
       <div
-        className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50"
+        className="fixed inset-0 flex items-center justify-center bg-gray-900 z-50"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-white rounded-lg shadow-lg w-96 p-6">
+        <div className="bg-secondary rounded-lg shadow-lg w-96 p-6">
           {showSuccess && (
             <div className="bg-green-100 border-t border-b border-green-500 text-green-700 px-4 py-3 mb-4" role="alert">
               <p className="font-bold">Success!</p>
@@ -315,7 +315,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
           </h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-primary text-start">
                 Username
               </label>
               <input
@@ -328,7 +328,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-primary text-start">
                 Password
               </label>
               <input
@@ -343,7 +343,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
             <div className="flex justify-end space-x-3">
               <button
                 type="button"
-                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                className="px-4 py-2 text-gray-600 hover:text-primary"
                 onClick={() => setShowCredentialsModal(false)}
               >
                 Cancel
@@ -363,12 +363,12 @@ const AddSocialAccountPopup = ({ onClose }) => {
 
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg shadow-lg w-2/3 max-w-xl">
-        <div className="flex items-center justify-between p-4 border-b bg-[#F6F7FF]">
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 opacity-75 z-50">
+      <div className="bg-secondary rounded-lg shadow-lg w-2/3 max-w-xl">
+        <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-medium">Add Social Account</h2>
           <button
-            className="text-gray-500 hover:text-black text-xl"
+            className="text-gray-500 hover:text-primary text-xl cursor-pointer"
             onClick={onClose}
           >
             &times;
@@ -377,7 +377,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
 
         <div className="p-4">
           <div className="flex justify-between items-stretch">
-            <p className="text-sm text-gray-600">Bulk Social Accounts</p>
+            <p className="text-sm text-primary">Bulk Social Accounts</p>
             <button
               onClick={downloadSampleCSV}
               className="text-blue-500 text-sm hover:underline"
@@ -387,7 +387,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
           </div>
 
           <div
-            className="mt-4 p-4 border-2 border-dashed border-gray-300 rounded-md"
+            className="mt-4 p-4 border-2 border-dashed border-neutral-400 rounded-md"
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
           >

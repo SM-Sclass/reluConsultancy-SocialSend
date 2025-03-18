@@ -23,7 +23,7 @@ const Listing = ({
 
   return (
     <div className={`w-full ${className}`}>
-      <div className="relative overflow-x-auto shadow-sm rounded-lg">
+      <div className="relative overflow-x-auto shadow-sm rounded-lg border border-secondary">
         <div className="overflow-hidden">
           {isPending ? (
             <div className="space-y-1 bg-secondary rounded-lg p-4">
@@ -40,12 +40,12 @@ const Listing = ({
             </div>
           ) : (
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-secondary">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
-                        <TableHead key={header.id}>
+                        <TableHead key={header.id} className={header.id === 'select' ? 'text-center text-primary' : ''}>
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -58,7 +58,7 @@ const Listing = ({
                   </TableRow>
                 ))}
               </TableHeader>
-              <TableBody>
+              <TableBody className="bg-muted">
                 {table.getRowModel().rows.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow
@@ -67,7 +67,7 @@ const Listing = ({
                     >
                       {row.getVisibleCells().map((cell) => {
                         return (
-                          <TableCell key={cell.id}>
+                          <TableCell key={cell.id} >
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()

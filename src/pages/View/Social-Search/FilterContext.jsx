@@ -21,13 +21,12 @@ export const FilterProvider = ({ children, showToast }) => {
   });
 
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [filterId, setFilterId] = useState('67d849ac9b6a61db89174ab7');
+  const [filterId, setFilterId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Function to update a specific filter
   const updateFilters = useCallback((key, value) => {
-    console.log(`Setting filter ${key} to:`, value);
     setFilters(prevFilters => {
       const newFilters = {
         ...prevFilters,
@@ -72,10 +71,9 @@ export const FilterProvider = ({ children, showToast }) => {
         return acc;
       }, {});
 
-      console.log('Sending API payload:', filteredData);
 
       const result = await filterUsers(filteredData);
-      console.log('Filter API response:', result);
+      // console.log('Filter API response:', result);
 
       // Store the filter ID returned from the API
       let newFilterId = null;
@@ -88,13 +86,9 @@ export const FilterProvider = ({ children, showToast }) => {
 
       setFilterId(newFilterId);
       // console.log('New fetched filtered accounts:', newFetchedFilteredAccounts);
-      try {
-        // Fixed query invalidation with proper format
-
-        console.log('Query invalidated successfully');
-      } catch (err) {
-        console.error('Error invalidating query:', err);
-      }
+      await queryClient.invalidateQueries({
+        queryKey: ['filteredUserAccounts', filterId]
+      });
       
       if (showToast) {
         showToast('Filters applied successfully', 'success');

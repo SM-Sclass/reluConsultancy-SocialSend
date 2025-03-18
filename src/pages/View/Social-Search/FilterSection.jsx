@@ -77,7 +77,7 @@ const FilterSection = ({ config }) => {
           <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full pl-3 pr-10 py-2 border border-gray-200 rounded text-left text-sm flex items-center justify-between"
+              className="w-full pl-3 pr-10 py-2 border border-secondary rounded text-left text-sm flex items-center justify-between"
             >
               {tags.length > 0 ? tags.join(', ') : `Select ${title}`}
               {isDropdownOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -106,14 +106,14 @@ const FilterSection = ({ config }) => {
             type="text"
             value={value}
             onChange={handleInputChange}
-            className="w-full pl-3 pr-3 py-2 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 text-sm"
+            className="w-full pl-3 pr-3 py-2 border border-secondary rounded focus:ring-1 focus:ring-blue-500 text-sm"
             placeholder={placeholder || `Enter ${title.toLowerCase()}`}
           />
         );
 
       case FILTER_TYPES.TAG:
         return (
-          <div className="min-h-[38px] w-full pl-3 pr-3 py-1 border border-gray-200 rounded focus-within:ring-1 focus-within:ring-blue-500 flex flex-wrap gap-1 items-center">
+          <div className="min-h-[38px] w-full pl-3 pr-3 py-1 border border-secondary rounded focus-within:ring-1 focus-within:ring-blue-500 flex flex-wrap gap-1 items-center">
             {tags.map((tag, index) => (
               <FilterTag
                 key={index}

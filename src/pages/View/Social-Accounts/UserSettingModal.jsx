@@ -12,8 +12,20 @@ import {
 } from "recharts";
 import { userArray } from "../../../Data/Users";
 import { fetchSocialAccountStatistics, sendTemplateMessage } from "./Service/SocialAccount.service";
+import { Toast } from "../Social-Search/helper";
 
 const UserSettingsModal = ({ username, isOpen, onClose }) => {
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type) => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(null);
+    }, 3000);
+  };
+
+  const handleCloseToast = () => {
+    setToast(null);
+  };
   const [activeTab, setActiveTab] = useState("Warmup");
   const [isAnimating, setIsAnimating] = useState(false);
   const isGlowDoggies = username === "glow.doggies";
@@ -52,7 +64,7 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
     },
     Settings: {
       id: "Settings",
-      content: () => <SettingsContent username={username} onClose={onClose} />,
+      content: () => <SettingsContent username={username} onClose={onClose} showToast={showToast} />,
     },
     Statistics: {
       id: "Statistics",
@@ -74,8 +86,8 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
   const TabButton = ({ tabId }) => (
     <button
       className={`px-6 py-3 ${activeTab === tabId
-          ? "border-b-2 border-blue-500 text-blue-500"
-          : "text-primary"
+        ? "border-b-2 border-blue-500 text-blue-500"
+        : "text-primary"
         }`}
       onClick={() => setActiveTab(tabId)}
     >
@@ -90,6 +102,13 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={handleCloseToast}
+        />
+      )}
       <div
         className={`absolute inset-0 bg-black transition-opacity duration-300 ${isOpen ? "bg-opacity-10" : "bg-opacity-50 pointer-events-none"
           }`}
@@ -268,7 +287,7 @@ const WarmupContent = ({ username }) => {
   );
 };
 
-const SettingsContent = ({ username, onClose }) => {
+const SettingsContent = ({ username, onClose, showToast }) => {
   // Find the specific user from userArray based on username
   const defaultUser = userArray.find(user => user.username === username) || userArray[0];
 
@@ -282,7 +301,7 @@ const SettingsContent = ({ username, onClose }) => {
     social_account_id: "67b878d7ee1dfdb84e89c55f",
   });
 
-  
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -309,10 +328,16 @@ const SettingsContent = ({ username, onClose }) => {
     //   };
     // }
     // console.log('Settings saved for user:', username);
-    formData.follow_limit = Number(formData.follow_limit);
-    formData.like_limit = Number(formData.like_limit);
-    formData.dm_limit = Number(formData.dm_limit);
-    await sendTemplateMessage(formData)
+    try {
+      formData.follow_limit = Number(formData.follow_limit);
+      formData.like_limit = Number(formData.like_limit);
+      formData.dm_limit = Number(formData.dm_limit);
+      await sendTemplateMessage(formData)
+      showToast('Template saved successfully', 'success');
+    } catch (error) {
+      showToast(error.response.data.result, 'error')
+    }
+
   };
 
   if (!defaultUser) {
@@ -330,7 +355,7 @@ const SettingsContent = ({ username, onClose }) => {
         <div className="flex gap-4">
           <input
             type="text"
-            name="firstName"
+            name="first_name"
             placeholder="First Name"
             className="flex-1 p-2 border rounded border-primary"
             defaultValue={formData.first_name}
@@ -338,7 +363,7 @@ const SettingsContent = ({ username, onClose }) => {
           />
           <input
             type="text"
-            name="lastName"
+            name="last_name"
             placeholder="Last Name"
             className="flex-1 p-2 border rounded border-primary"
             defaultValue={formData.last_name}
@@ -364,7 +389,7 @@ const SettingsContent = ({ username, onClose }) => {
             </button>
           </div>
           <textarea
-            name="senderMessage"
+            name="message"
             className="w-full p-2 min-h-[100px] resize-none border border-primary"
             defaultValue={formData.message}
             onChange={handleInputChange}
@@ -381,7 +406,7 @@ const SettingsContent = ({ username, onClose }) => {
             </label>
             <input
               type="number"
-              name="friendRequestLimit"
+              name="follow_limit"
               defaultValue={formData.follow_limit}
               onChange={handleInputChange}
               className="w-full p-2 border rounded border-primary"
@@ -394,7 +419,7 @@ const SettingsContent = ({ username, onClose }) => {
             </label>
             <input
               type="number"
-              name="likeLimit"
+              name="like_limit"
               defaultValue={formData.like_limit}
               onChange={handleInputChange}
               className="w-full p-2 border rounded border-primary"
