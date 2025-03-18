@@ -12,7 +12,7 @@ import {
   GoogleAuthProvider,
   FacebookAuthProvider
 } from 'firebase/auth';
-import { setDoc, doc } from 'firebase/firestore';
+import { setDoc, doc, getDoc } from 'firebase/firestore';
 import { Eye, EyeOff } from "lucide-react";
 import bcrypt from 'bcryptjs';
 import { api } from '@/Services/Api';
@@ -162,42 +162,42 @@ const SignupForm = () => {
     }
   };
 
-  const handleFacebookSignup = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const provider = new FacebookAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+  // const handleFacebookSignup = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError('');
+  //     const provider = new FacebookAuthProvider();
+  //     const result = await signInWithPopup(auth, provider);
+  //     const user = result.user;
 
-      const userRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userRef);
-      if (!userDoc.exists()) {
-        const body = {
-          email: user.email,
-          username: user.displayName
-        }
-        const response = await signUpApi(body);
-        const userData = {
-          user_id: response.user_id,
-          uid: user.uid,
-          email: user.email || '',
-          displayName: user.displayName || '',
-          photoURL: user.photoURL || '',
-          lastLogin: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        };
-        await saveUserToFirestore(userData);
-      }
+  //     const userRef = doc(db, 'users', user.uid);
+  //     const userDoc = await getDoc(userRef);
+  //     if (!userDoc.exists()) {
+  //       const body = {
+  //         email: user.email,
+  //         username: user.displayName
+  //       }
+  //       const response = await signUpApi(body);
+  //       const userData = {
+  //         user_id: response.user_id,
+  //         uid: user.uid,
+  //         email: user.email || '',
+  //         displayName: user.displayName || '',
+  //         photoURL: user.photoURL || '',
+  //         lastLogin: serverTimestamp(),
+  //         updatedAt: serverTimestamp()
+  //       };
+  //       await saveUserToFirestore(userData);
+  //     }
 
-      navigate('/Social-Accounts');
-    } catch (err) {
-      console.error('Facebook sign-up error:', err);
-      setError(err.message || 'Failed to sign up with Facebook. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     navigate('/Social-Accounts');
+  //   } catch (err) {
+  //     console.error('Facebook sign-up error:', err);
+  //     setError(err.message || 'Failed to sign up with Facebook. Please try again.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="max-w-md w-full bg-secondary p-8 rounded-lg shadow-md">
@@ -277,7 +277,7 @@ const SignupForm = () => {
       <div className="text-center my-4">Or</div>
 
       <div className="space-y-3">
-        <button
+        {/* <button
           type="button"
           onClick={handleFacebookSignup}
           disabled={loading}
@@ -285,7 +285,7 @@ const SignupForm = () => {
         >
           <span className="text-blue-600">f</span>
           <span>Signup with Facebook</span>
-        </button>
+        </button> */}
 
         <button
           type="button"

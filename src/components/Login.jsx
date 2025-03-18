@@ -8,9 +8,9 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
-  FacebookAuthProvider
+  // FacebookAuthProvider
 } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { Eye, EyeOff } from "lucide-react";
 import { signUpApi } from './Signup';
 import { auth, db } from '../lib/firebase/config';
@@ -112,42 +112,42 @@ const LoginForm = () => {
     }
   };
 
-  const handleFacebookSignIn = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const provider = new FacebookAuthProvider();
-      const facebookAuthResponse = await signInWithPopup(auth, provider);
-      const user = facebookAuthResponse.user;
+  // const handleFacebookSignIn = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError('');
+  //     const provider = new FacebookAuthProvider();
+  //     const facebookAuthResponse = await signInWithPopup(auth, provider);
+  //     const user = facebookAuthResponse.user;
 
-      const userRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userRef);
-      if (!userDoc.exists()) {
-        const body = {
-          email: user.email,
-          username: user.displayName
-        }
-        const response = await signUpApi(body);
-        const userData = {
-          user_id: response.user_id,
-          uid: user.uid,
-          email: user.email || '',
-          displayName: user.displayName || '',
-          photoURL: user.photoURL || '',
-          lastLogin: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        };
-        await saveUserToFirestore(userData);
-      }
+  //     const userRef = doc(db, 'users', user.uid);
+  //     const userDoc = await getDoc(userRef);
+  //     if (!userDoc.exists()) {
+  //       const body = {
+  //         email: user.email,
+  //         username: user.displayName
+  //       }
+  //       const response = await signUpApi(body);
+  //       const userData = {
+  //         user_id: response.user_id,
+  //         uid: user.uid,
+  //         email: user.email || '',
+  //         displayName: user.displayName || '',
+  //         photoURL: user.photoURL || '',
+  //         lastLogin: serverTimestamp(),
+  //         updatedAt: serverTimestamp()
+  //       };
+  //       await saveUserToFirestore(userData);
+  //     }
 
-      navigate('/dashboard');
-    } catch (err) {
-      console.error('Facebook sign-in error:', err);
-      setError(err.message || 'Failed to sign in with Facebook. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     navigate('/dashboard');
+  //   } catch (err) {
+  //     console.error('Facebook sign-in error:', err);
+  //     setError(err.message || 'Failed to sign in with Facebook. Please try again.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="max-w-md w-full bg-secondary p-8 rounded-lg shadow-md">
@@ -215,7 +215,7 @@ const LoginForm = () => {
       <div className="text-center my-4">Or</div>
 
       <div className="space-y-3">
-        <button
+        {/* <button
           type="button"
           onClick={handleFacebookSignIn}
           disabled={loading}
@@ -223,7 +223,7 @@ const LoginForm = () => {
         >
           <span className="text-blue-600">f</span>
           <span>Login with Facebook</span>
-        </button>
+        </button> */}
 
         <button
           type="button"
