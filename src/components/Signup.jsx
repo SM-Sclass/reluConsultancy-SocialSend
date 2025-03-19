@@ -10,7 +10,7 @@ import {
   // sendEmailVerification,
   signInWithPopup,
   GoogleAuthProvider,
-  FacebookAuthProvider
+  // FacebookAuthProvider
 } from 'firebase/auth';
 import { setDoc, doc, getDoc } from 'firebase/firestore';
 import { Eye, EyeOff } from "lucide-react";

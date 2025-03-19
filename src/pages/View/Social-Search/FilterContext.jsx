@@ -32,7 +32,6 @@ export const FilterProvider = ({ children, showToast }) => {
         ...prevFilters,
         [key]: value
       };
-      console.log("New filters state:", newFilters);
       return newFilters;
     });
   }, []);
@@ -45,7 +44,6 @@ export const FilterProvider = ({ children, showToast }) => {
 
       // Create a clean copy of the filters
       const currentFilters = { ...filters };
-      console.log("Full filters object:", currentFilters);
 
       // Only send non-empty filters to the API
       const filteredData = Object.entries(currentFilters).reduce((acc, [key, value]) => {
@@ -67,10 +65,8 @@ export const FilterProvider = ({ children, showToast }) => {
         else if (typeof value === 'string' && value.trim() !== '') {
           acc[key] = value;
         }
-
         return acc;
       }, {});
-
 
       const result = await filterUsers(filteredData);
       // console.log('Filter API response:', result);
@@ -80,17 +76,18 @@ export const FilterProvider = ({ children, showToast }) => {
       if (result.filter_id) {
         newFilterId = result.filter_id;
       }
-      else{
+      else {
         newFilterId = '67cd8ea517b104152dc65c26';
       }
 
       setFilterId(newFilterId);
-      // console.log('New fetched filtered accounts:', newFetchedFilteredAccounts);
 
+      await queryClient.invalidateQueries({ queryKey: ['filters'] });
+
+      // Invalidate the filtered user accounts query for the selected filter
       await queryClient.invalidateQueries({
-        queryKey: ['filters', filterId]
+        queryKey: ['filteredUserAccounts', newFilterId],
       });
-      
       if (showToast) {
         showToast('Filters applied successfully', 'success');
       }
@@ -115,6 +112,7 @@ export const FilterProvider = ({ children, showToast }) => {
       user: "67b8786fee1dfdb84e89c55d", // Keep the user ID
       location: [],
       hashtag: [],
+      filter_name: "",
       age: null,
       keywords: [],
       social_platform: [],
@@ -124,13 +122,13 @@ export const FilterProvider = ({ children, showToast }) => {
       interests: []
     };
 
-    console.log("Resetting filters to:", initialFilters);
-    setFilters(initialFilters);
-    setFilteredUsers([]);
-    setFilterId(null);
-
-    // Show reset toast if showToast function is provided
-    if (showToast) {
+    if (JSON.stringify(filters) === JSON.stringify(initialFilters)) {
+      setFilterId(null);
+      showToast('Table has been Reset', 'success');
+    }
+    else {
+      setFilters(initialFilters);
+      setFilteredUsers([]);
       showToast('All filters have been reset', 'success');
     }
   }, [showToast]);

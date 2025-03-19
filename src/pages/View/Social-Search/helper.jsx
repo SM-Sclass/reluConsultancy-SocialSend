@@ -190,7 +190,7 @@ export const SideTab = ({ isOpen, onClose }) => {
                   onClick={() => handleFilterSelect(filter)}
                   className={`
                       p-3 rounded-lg cursor-pointer transition-colors
-                      ${selectedFilter === filter._id
+                      ${selectedFilter === filter._id && selectedFilter === filterId
                       ? 'bg-secondary border-2 border-blue-500'
                       : 'bg-secondary border hover:bg-muted border-gray-500'
                     }

@@ -19,6 +19,7 @@ const SocialSearch = ({ toast, handleCloseToast }) => {
   const { isPending, data } = useQuery({
     queryKey: ['filteredUserAccounts', filterId],
     queryFn: () => fetchTargetByFilterId(filterId),
+    refetchInterval: filterId? 10000 : false,
   })
 
   const [pagination, setPagination] = useState({pageIndex: 0, pageSize: 10})
