@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { X, Loader2 } from "lucide-react";
 import {
   BarChart,
@@ -11,11 +11,17 @@ import {
   CartesianGrid
 } from "recharts";
 import { userArray } from "../../../Data/Users";
-import { fetchSocialAccountStatistics, sendTemplateMessage } from "./Service/SocialAccount.service";
+import { fetchSocialAccountStatistics, sendTemplateMessage, getTemplateMessage } from "./Service/SocialAccount.service";
 import { Toast } from "../Social-Search/helper";
 
 const UserSettingsModal = ({ username, isOpen, onClose }) => {
   const [toast, setToast] = useState(null);
+  const user_id = "67b878d7ee1dfdb84e89c55f";
+  const { isPending, data } = useQuery({
+    queryKey: ['TemplateMessage',user_id],
+    queryFn: () => getTemplateMessage(user_id),
+  })
+
   const showToast = (message, type) => {
     setToast({ message, type });
     setTimeout(() => {
@@ -64,7 +70,7 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
     },
     Settings: {
       id: "Settings",
-      content: () => <SettingsContent username={username} onClose={onClose} showToast={showToast} />,
+      content: () => <SettingsContent username={username} onClose={onClose} showToast={showToast} templateData={data.latest_template} isLoading={isPending} />,
     },
     Statistics: {
       id: "Statistics",
@@ -287,17 +293,15 @@ const WarmupContent = ({ username }) => {
   );
 };
 
-const SettingsContent = ({ username, onClose, showToast }) => {
-  // Find the specific user from userArray based on username
-  const defaultUser = userArray.find(user => user.username === username) || userArray[0];
-
+const SettingsContent = ({ onClose, showToast, templateData, isLoading }) => {
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
-    first_name: defaultUser.settings.sendername.firstName,
-    last_name: defaultUser.settings.sendername.lastname,
-    message: defaultUser.settings.Sendermessage,
-    follow_limit: defaultUser.settings.Daily_Friend_Request_Limit,
-    like_limit: defaultUser.settings.Daily_Like_Limit,
-    dm_limit: defaultUser.settings.Daily_Direct_Message_Limit,
+    first_name: templateData.first_name || '',
+    last_name: templateData.last_name || '',
+    message: templateData?.campaign_message || '',
+    follow_limit: templateData?.daily_connections || 0,
+    like_limit: templateData.daily_likes || 0,
+    dm_limit: templateData.daily_messages || 0,
     social_account_id: "67b878d7ee1dfdb84e89c55f",
   });
 
@@ -312,63 +316,51 @@ const SettingsContent = ({ username, onClose, showToast }) => {
   };
 
   const handleSave = async () => {
-    // Find and update the specific user in userArray
-    // const userIndex = userArray.findIndex(user => user.username === username);
-    // if (userIndex !== -1) {
-    //   userArray[userIndex].settings = {
-    //     ...userArray[userIndex].settings,
-    //     sendername: {
-    //       firstName: formData.firstName,
-    //       lastname: formData.lastName
-    //     },
-    //     Sendermessage: formData.senderMessage,
-    //     Daily_Friend_Request_Limit: Number(formData.friendRequestLimit),
-    //     Daily_Like_Limit: Number(formData.likeLimit),
-    //     Daily_Direct_Message_Limit: Number(formData.directMessageLimit)
-    //   };
-    // }
-    // console.log('Settings saved for user:', username);
     try {
       formData.follow_limit = Number(formData.follow_limit);
       formData.like_limit = Number(formData.like_limit);
       formData.dm_limit = Number(formData.dm_limit);
       await sendTemplateMessage(formData)
       showToast('Template saved successfully', 'success');
+      await queryClient.invalidateQueries({
+        queryKey: ['TemplateMessage']
+      });
     } catch (error) {
       showToast(error.response.data.result, 'error')
     }
-
   };
-
-  if (!defaultUser) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-gray-600">User settings not found</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
       <div className="space-y-4">
         <h3 className="text-sm font-medium text-primary">Sender Name</h3>
         <div className="flex gap-4">
-          <input
-            type="text"
-            name="first_name"
-            placeholder="First Name"
-            className="flex-1 p-2 border rounded border-primary"
-            defaultValue={formData.first_name}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="last_name"
-            placeholder="Last Name"
-            className="flex-1 p-2 border rounded border-primary"
-            defaultValue={formData.last_name}
-            onChange={handleInputChange}
-          />
+
+          {isLoading ? (
+            <>
+              <Skeleton className="h-10 w-full rounded" />
+              <Skeleton className="h-10 w-full rounded" />
+            </>
+          ) : (
+            <>
+              <input
+                type="text"
+                name="first_name"
+                placeholder="First Name"
+                className="flex-1 p-2 border rounded border-primary"
+                defaultValue={formData.first_name}
+                onChange={handleInputChange}
+              />
+              <input
+                type="text"
+                name="last_name"
+                placeholder="Last Name"
+                className="flex-1 p-2 border rounded border-primary"
+                defaultValue={formData.last_name}
+                onChange={handleInputChange}
+              />
+            </>
+          )}
         </div>
       </div>
 
@@ -378,22 +370,42 @@ const SettingsContent = ({ username, onClose, showToast }) => {
         </h3>
         <div className="border rounded-lg">
           <div className="flex gap-2 p-2 border-b">
-            <button className="p-1 hover:bg-secondary rounded">
-              <span className="font-bold">B</span>
-            </button>
-            <button className="p-1 hover:bg-secondary rounded">
-              <span className="italic">I</span>
-            </button>
-            <button className="p-1 hover:bg-secondary rounded">
-              <span className="underline">U</span>
-            </button>
+            {isLoading ? (
+              <>
+                <Skeleton className="h-8 w-8 rounded" />
+                <Skeleton className="h-8 w-8 rounded" />
+                <Skeleton className="h-8 w-8 rounded" />
+              </>
+            ) : (
+              <>
+                <button className="p-1 hover:bg-secondary rounded">
+                  <span className="font-bold">B</span>
+                </button>
+                <button className="p-1 hover:bg-secondary rounded">
+                  <span className="italic">I</span>
+                </button>
+                <button className="p-1 hover:bg-secondary rounded">
+                  <span className="underline">U</span>
+                </button>
+              </>
+            )}
+
           </div>
-          <textarea
-            name="message"
-            className="w-full p-2 min-h-[100px] resize-none border border-primary"
-            defaultValue={formData.message}
-            onChange={handleInputChange}
-          />
+          {isLoading ? (
+            <>
+              <Skeleton className="h-28 w-full rounded" />
+            </>
+          ) : (
+            <>
+              <textarea
+                name="message"
+                className="w-full p-2 min-h-[100px] resize-none border border-primary"
+                defaultValue={formData.message}
+                onChange={handleInputChange}
+              />
+            </>
+          )}
+
         </div>
       </div>
 
@@ -404,39 +416,63 @@ const SettingsContent = ({ username, onClose, showToast }) => {
             <label className="block text-sm text-primary mb-1">
               Daily Friend Request Limit
             </label>
-            <input
-              type="number"
-              name="follow_limit"
-              defaultValue={formData.follow_limit}
-              onChange={handleInputChange}
-              className="w-full p-2 border rounded border-primary"
-            />
+            {isLoading ? (
+              <>
+                <Skeleton className="h-10 w-full rounded mb-1" />
+              </>
+            ) : (
+              <>
+                <input
+                  type="number"
+                  name="follow_limit"
+                  defaultValue={formData.follow_limit}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded border-primary"
+                />
+              </>
+            )}
             <span className="text-xs text-primary">Recommended Limit is 30</span>
           </div>
           <div>
             <label className="block text-sm text-primary mb-1">
               Daily Like/Post Limit
             </label>
-            <input
-              type="number"
-              name="like_limit"
-              defaultValue={formData.like_limit}
-              onChange={handleInputChange}
-              className="w-full p-2 border rounded border-primary"
-            />
+            {isLoading ? (
+              <>
+                <Skeleton className="h-10 w-full rounded mb-1" />
+              </>
+            ) : (
+              <>
+                <input
+                  type="number"
+                  name="like_limit"
+                  defaultValue={formData.like_limit}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded border-primary"
+                />
+              </>
+            )}
             <span className="text-xs text-primary">Recommended Limit is 30</span>
           </div>
           <div>
             <label className="block text-sm text-primary mb-1">
               Daily Direct Message Limit
             </label>
-            <input
-              type="number"
-              name="dm_limit"
-              defaultValue={formData.dm_limit}
-              onChange={handleInputChange}
-              className="w-full p-2 border rounded border-primary"
-            />
+            {isLoading ? (
+              <>
+                <Skeleton className="h-10 w-full rounded mb-1" />
+              </>
+            ) : (
+              <>
+                <input
+                  type="number"
+                  name="dm_limit"
+                  defaultValue={formData.dm_limit}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded border-primary"
+                />
+              </>
+            )}
             <span className="text-xs text-primary">Recommended Limit is 30</span>
           </div>
         </div>

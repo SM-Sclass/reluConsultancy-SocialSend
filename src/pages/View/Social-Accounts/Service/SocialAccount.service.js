@@ -1,5 +1,4 @@
 import { api } from "@/Services/Api";
-import { Trophy } from "lucide-react";
 
 export const fetchSocialAccountStatistics = async (social_account_id) => {
   try {
@@ -8,7 +7,6 @@ export const fetchSocialAccountStatistics = async (social_account_id) => {
     return response.data.graphs;
   } catch (error) {
     console.error('Error in fetchUsersByFilterId:', error);
-    throw error;
   }
 }
 
@@ -18,6 +16,16 @@ export const sendTemplateMessage = async (messageData) => {
     return response.data;
   } catch (error) {
     console.error('Error in fetchUsersByFilterId:', error);
-    throw error;
+  }
+}
+
+export const getTemplateMessage = async (messageData) => {
+  try {
+    const pathVariable = messageData ? messageData :'67b878d7ee1dfdb84e89c55f';
+    const response = await api.get(`/api/get_template_msg/${pathVariable}`);
+    console.log(response.data);
+    return response.data
+  } catch (error) {
+    console.error('Error in fetchUsersByFilterId:', error);
   }
 }
