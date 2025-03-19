@@ -1,9 +1,8 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { Instagram } from 'lucide-react';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { Checkbox } from '@/components/ui/checkbox';
 import { fetchAllFilters } from './Service/User.service';
-import { FilterContext } from './FilterContext';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const columns = [
@@ -101,8 +100,7 @@ export const Toast = ({ message, type, onClose }) => {
   );
 };
 
-export const SideTab = ({ isOpen, onClose }) => {
-  const { filterId, setFilterId } = useContext(FilterContext);
+export const SideTab = ({ isOpen, onClose, filterId, setFilterId }) => {
   const queryClient = useQueryClient();
   const [selectedFilter, setSelectedFilter] = useState(filterId);
   const { isPending, data } = useQuery({
@@ -124,7 +122,6 @@ export const SideTab = ({ isOpen, onClose }) => {
       if (selectedFilter) {
         setFilterId(selectedFilter); // Close the side tab after selection
       }
-      console.log('Query invalidated successfully');
     } catch (err) {
       console.error('Error invalidating query:', err);
     }
@@ -142,7 +139,7 @@ export const SideTab = ({ isOpen, onClose }) => {
           <h2 className="text-xl font-bold">Saved Filters</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-primary"
+            className="text-gray-500 hover:text-red-500"
             aria-label="Close"
           >
             <svg

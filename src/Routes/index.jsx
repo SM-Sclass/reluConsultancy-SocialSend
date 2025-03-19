@@ -9,7 +9,6 @@ import { CampaignProvider } from '@/pages/View/Campaigns/CampaignContext'
 import AuthLayout from '../layout/AuthLayout'
 import LoginForm from '@/components/Login'
 import SignupForm from '@/components/Signup'
-import { FilterProvider } from '@/pages/View/Social-Search/FilterContext'
 
 const AppRouter = () => {
   const [toast, setToast] = useState(null);
@@ -37,9 +36,11 @@ const AppRouter = () => {
       }>
         <Route path="Social-Accounts" element={<SocialAccounts />} />
         <Route path="Social-Search" element={
-          <FilterProvider showToast={showToast} >
-            <SocialSearch handleCloseToast={handleCloseToast} toast={toast}/>
-          </FilterProvider>
+            <SocialSearch 
+            handleCloseToast={handleCloseToast} 
+            toast={toast} 
+            showToast={showToast}
+            />
         } />
         <Route path="Campaigns" element={
           <CampaignProvider>

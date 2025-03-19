@@ -1,25 +1,23 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import FilterTag from './FilterTag';
-import { FilterContext } from './FilterContext';
 import { FILTER_TYPES } from './FilterFieldConfig';
 
-const FilterSection = ({ config }) => {
+const FilterSection = ({ config, filters, updateFilter }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [value, setValue] = useState('');
   const [tags, setTags] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { filters, updateFilters } = useContext(FilterContext);
 
   const { id, title, type, options, placeholder } = config;
 
   useEffect(() => {
-    const contextValue = filters[id];
-    if (contextValue !== undefined) {
+    const currentValue = filters[id];
+    if (currentValue !== undefined) {
       if (type === FILTER_TYPES.TAG || type === FILTER_TYPES.DROPDOWN) {
-        setTags(Array.isArray(contextValue) ? contextValue : []);
+        setTags(Array.isArray(currentValue) ? currentValue : []);
       } else {
-        setValue(contextValue?.toString() || '');
+        setValue(currentValue?.toString() || '');
       }
     }
   }, [filters, id, type]);
@@ -30,11 +28,11 @@ const FilterSection = ({ config }) => {
     if (type === FILTER_TYPES.NUMERIC) {
       if (newValue === '' || /^\d+$/.test(newValue)) {
         setValue(newValue);
-        updateFilters(id, newValue ? parseInt(newValue, 10) : null);
+        updateFilter(id, newValue ? parseInt(newValue, 10) : null);
       }
     } else {
       setValue(newValue);
-      updateFilters(id, newValue);
+      updateFilter(id, newValue);
     }
   };
 
@@ -44,21 +42,21 @@ const FilterSection = ({ config }) => {
       const newTags = [...tags, value.trim()];
       setTags(newTags);
       setValue('');
-      updateFilters(id, newTags);
+      updateFilter(id, newTags);
     }
     
     if (e.key === 'Backspace' && !value && tags.length > 0) {
       const newTags = [...tags];
       newTags.pop();
       setTags(newTags);
-      updateFilters(id, newTags);
+      updateFilter(id, newTags);
     }
   };
 
   const removeTag = (indexToRemove) => {
     const newTags = tags.filter((_, index) => index !== indexToRemove);
     setTags(newTags);
-    updateFilters(id, newTags);
+    updateFilter(id, newTags);
   };
 
   const handleDropdownSelect = (option) => {
@@ -66,7 +64,7 @@ const FilterSection = ({ config }) => {
       ? tags.filter(tag => tag !== option)
       : [...tags, option];
     setTags(newTags);
-    updateFilters(id, newTags);
+    updateFilter(id, newTags);
     setIsDropdownOpen(false);
   };
 

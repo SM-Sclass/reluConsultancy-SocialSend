@@ -9,7 +9,7 @@ import { auth } from '@/lib/firebase/config';
 import { useTheme } from '@/components/theme-provider';
 
 const AuthLayout = () => {
-  const theme = useTheme();
+  const {theme} = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 

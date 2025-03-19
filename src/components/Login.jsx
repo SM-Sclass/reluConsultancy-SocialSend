@@ -97,11 +97,28 @@ const LoginForm = () => {
           email: user.email || '',
           displayName: user.displayName || '',
           photoURL: user.photoURL || '',
-          lastLogin: serverTimestamp(),
-          updatedAt: serverTimestamp()
+          loginType: 'google',
+          createdAt: serverTimestamp(),
         };
         await saveUserToFirestore(userData);
       }
+      else {
+        const existingUserData = userDoc.data();
+        if (existingUserData.loginType === 'emailAndPassword') {
+          // Update the existing entry with photoURL and displayName
+          await setDoc(
+            userRef,
+            {
+              displayName: user.displayName || existingUserData.displayName || '',
+              photoURL: user.photoURL || existingUserData.photoURL || '',
+              loginType: 'google', // Update the loginType to Google
+              updatedAt: serverTimestamp(),
+            },
+            { merge: true } // Merge with existing data
+          );
+        }
+      }
+
 
       navigate('/Social-Accounts');
     } catch (err) {

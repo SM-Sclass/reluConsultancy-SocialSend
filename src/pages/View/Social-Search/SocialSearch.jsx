@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   getCoreRowModel,
@@ -7,15 +7,23 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
+import { useFilters } from '@/hooks/useFilters';
 import FilterSidebar from './FilterSidebar';
 import Breadcrumb from '../../../components/BreadCrumb';
-import { FilterContext } from './FilterContext';
 import Listing from '@/components/ReactTable'
 import { fetchTargetByFilterId } from './Service/User.service';
 import { columns, Toast, SideTab } from './helper';
 
-const SocialSearch = ({ toast, handleCloseToast }) => {
-  const { resetFilters, loading, applyFilters, filterId } = useContext(FilterContext);
+const SocialSearch = ({ toast, handleCloseToast, showToast }) => {
+  const { 
+    filters, 
+    updateFilter, 
+    filterId, 
+    setFilterId, 
+    applyFilters, 
+    resetFilters, 
+    loading 
+  } = useFilters(showToast);
   const { isPending, data } = useQuery({
     queryKey: ['filteredUserAccounts', filterId],
     queryFn: () => fetchTargetByFilterId(filterId),
@@ -28,16 +36,10 @@ const SocialSearch = ({ toast, handleCloseToast }) => {
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
 
-  const handleApplyFilters = () => {
-    applyFilters();
-  };
-
   const [isSideTabOpen, setIsSideTabOpen] = useState(false);
-
   const handleBreadcrumbClick = () => {
     setIsSideTabOpen(true);
   };
-
   const handleCloseSideTab = () => {
     setIsSideTabOpen(false);
   };
@@ -85,14 +87,17 @@ const SocialSearch = ({ toast, handleCloseToast }) => {
       <SideTab
         isOpen={isSideTabOpen}
         onClose={handleCloseSideTab}
+        filterId={filterId}
+        setFilterId={setFilterId}
       />
 
       <div className="flex flex-col sm:flex-row rounded h-full overflow-hidden">
         <FilterSidebar
+        filters={filters}
+          updateFilter={updateFilter}
           resetFilters={resetFilters}
           loading={loading}
           applyFilters={applyFilters}
-          handleApplyFilters={handleApplyFilters}
         />
         <div className="flex-1 h-full overflow-y-auto">
           <Listing

@@ -1,5 +1,6 @@
 import {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
+import Avatar from "react-avatar";
 import {
   Disclosure,
   DisclosureButton,
@@ -14,7 +15,6 @@ import { signOut } from 'firebase/auth';
 import { auth } from "@/lib/firebase/config";
 import Logo from "../assets/Social Send.svg";
 import LogoDrk from "../assets/Social Send Drk.svg";
-
 import { useTheme } from "./theme-provider";
 import { useSidebar } from "./SidebarContext";
 
@@ -30,6 +30,7 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
+  const user = auth.currentUser;
   const { theme, setTheme } = useTheme();
   const { toggleSidebar, toggleCollapse } = useSidebar();
   const [isMobile, setIsMobile] = useState(false);
@@ -39,10 +40,9 @@ export default function Navbar() {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 640); // 640px is sm breakpoint in Tailwind
     };
-
     // Check initially
     checkIsMobile();
-
+    
     // Add resize listener
     window.addEventListener('resize', checkIsMobile);
 
@@ -155,11 +155,20 @@ export default function Navbar() {
                 <MenuButton className="relative flex rounded-full bg-accent text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 p-0 border-0">
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">Open user menu</span>
-                  <img
-                    alt=""
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    className="size-8 rounded-full"
-                  />
+                  {user?.photoURL ? (
+                    <img
+                      alt="User Avatar"
+                      src={user.photoURL}
+                      className="size-8 rounded-full"
+                    />
+                  ) : (
+                    <Avatar
+                      name={user?.displayName || "Social Send"}
+                      size="32"
+                      round={true}
+                      className="size-8"
+                    />
+                  )}
                 </MenuButton>
               </div>
               <MenuItems

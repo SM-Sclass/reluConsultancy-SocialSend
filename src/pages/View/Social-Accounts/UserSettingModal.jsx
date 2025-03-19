@@ -55,8 +55,8 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-2 border rounded shadow">
-          <p className="text-sm">{`${payload[0].value}`}</p>
+        <div className="bg-secondary p-2 border rounded shadow">
+          <p className="text-sm text-primary">{`${payload[0].value}`}</p>
         </div>
       );
     }
@@ -128,7 +128,7 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
       >
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold">{username}</h2>
-          <button onClick={onClose} className="text-primary hover:text-gray-300">
+          <button onClick={onClose} className="text-primary hover:text-red-500">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -148,7 +148,7 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
   );
 };
 
-const WarmupContent = ({ username }) => {
+const WarmupContent = ({ username, CustomTooltip }) => {
   const [loading, setLoading] = useState(true);
   const currentUser = userArray.find(user => user.username === username);
   const [warmupStatus, setWarmupStatus] = useState(currentUser?.warmupEnabled || false);
@@ -182,17 +182,6 @@ const WarmupContent = ({ username }) => {
     }
   };
 
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-2 border rounded shadow">
-          <p className="text-sm">{`${payload[0].value}`}</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-300px)]">
@@ -200,7 +189,26 @@ const WarmupContent = ({ username }) => {
       </div>
     );
   }
+  const getBarFill = (entry, index, isHover) => {
+    return isHover ? darkenColor(color, 0.2) : color;
+  };
 
+  // Helper function to darken a color
+  const darkenColor = (color, amount) => {
+    // For hex colors
+    if (color.startsWith('#')) {
+      let r = parseInt(color.slice(1, 3), 16);
+      let g = parseInt(color.slice(3, 5), 16);
+      let b = parseInt(color.slice(5, 7), 16);
+      
+      r = Math.max(0, Math.floor(r * (1 - amount)));
+      g = Math.max(0, Math.floor(g * (1 - amount)));
+      b = Math.max(0, Math.floor(b * (1 - amount)));
+      
+      return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
+    return color;
+  };
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -277,12 +285,17 @@ const WarmupContent = ({ username }) => {
                   tickFormatter={(date) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 />
                 <YAxis ticks={[0, 1]} />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip />} 
+                cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
+                />
                 <Bar
                   dataKey="value"
                   fill={warmupStatus ? "#22c55e" : "#94a3b8"}
                   radius={[6, 6, 0, 0]}
                   barSize={20}
+                
+                  animationDuration={300}
+                  isAnimationActive={true}
                 />
               </BarChart>
             </ResponsiveContainer>
@@ -304,8 +317,6 @@ const SettingsContent = ({ onClose, showToast, templateData, isLoading }) => {
     dm_limit: templateData.daily_messages || 0,
     social_account_id: "67b878d7ee1dfdb84e89c55f",
   });
-
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -546,6 +557,26 @@ const StatisticsContent = ({ isGlowDoggies, CustomTooltip }) => {
         </div>
       );
     }
+    const getBarFill = (entry, index, isHover) => {
+      return isHover ? darkenColor(color, 0.2) : color;
+    };
+  
+    // Helper function to darken a color
+    const darkenColor = (color, amount) => {
+      // For hex colors
+      if (color.startsWith('#')) {
+        let r = parseInt(color.slice(1, 3), 16);
+        let g = parseInt(color.slice(3, 5), 16);
+        let b = parseInt(color.slice(5, 7), 16);
+        
+        r = Math.max(0, Math.floor(r * (1 - amount)));
+        g = Math.max(0, Math.floor(g * (1 - amount)));
+        b = Math.max(0, Math.floor(b * (1 - amount)));
+        
+        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+      }
+      return color;
+    };
 
     return (
       <div className="h-64 mb-8">
@@ -561,12 +592,16 @@ const StatisticsContent = ({ isGlowDoggies, CustomTooltip }) => {
             <Tooltip
               content={<CustomTooltip />}
               formatter={(value) => [`${value}`, title.split(' ')[0]]}
+              cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }} 
             />
             <Bar
               dataKey="value"
               fill={color}
               radius={[6, 6, 0, 0]}
               barSize={20}
+              activeBar={{ fill: darkenColor(color, 0.2), stroke: darkenColor(color, 0.4), strokeWidth: 1 }}
+              animationDuration={300}
+              isAnimationActive={true}
             />
           </BarChart>
         </ResponsiveContainer>

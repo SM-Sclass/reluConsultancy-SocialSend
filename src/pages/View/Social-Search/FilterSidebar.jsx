@@ -3,7 +3,7 @@ import { RefreshCcw, Loader, Save } from 'lucide-react';
 import FilterSection from './FilterSection';
 import { FILTERS_CONFIG } from './FilterFieldConfig';
 
-const FilterSidebar = ({ resetFilters, loading, handleApplyFilters }) => {
+const FilterSidebar = ({ filters, updateFilter, resetFilters, loading, applyFilters }) => {
 
   return (
     <div className="w-full sm:w-64  sm:border-r  sm:border-gray-200 p-4 h-full overflow-y-auto">
@@ -20,7 +20,7 @@ const FilterSidebar = ({ resetFilters, loading, handleApplyFilters }) => {
             </button>
             <button
               className="p-1 hover:bg-secondary rounded text-blue-600"
-              onClick={handleApplyFilters}
+              onClick={applyFilters}
               title="Apply filters"
               disabled={loading}
             >
@@ -37,7 +37,12 @@ const FilterSidebar = ({ resetFilters, loading, handleApplyFilters }) => {
         </div>
         
         {FILTERS_CONFIG.map((filterConfig) => (
-          <FilterSection key={filterConfig.id} config={filterConfig} />
+          <FilterSection 
+          key={filterConfig.id} 
+          config={filterConfig}
+            filters={filters} 
+            updateFilter={updateFilter}
+          />
         ))}
       </div>
     </div>

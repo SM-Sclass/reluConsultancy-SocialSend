@@ -10,14 +10,14 @@ import {
   // sendEmailVerification,
   signInWithPopup,
   GoogleAuthProvider,
+  updateProfile
   // FacebookAuthProvider
 } from 'firebase/auth';
-import { setDoc, doc, getDoc } from 'firebase/firestore';
+import { setDoc, doc, getDoc,serverTimestamp } from 'firebase/firestore';
 import { Eye, EyeOff } from "lucide-react";
 import bcrypt from 'bcryptjs';
 import { api } from '@/Services/Api';
 import { auth, db } from '../lib/firebase/config';
-
 // Zod schema for form validation
 const signupSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),
@@ -33,7 +33,6 @@ const signupSchema = z.object({
 export const signUpApi = async (data) => {
   try {
     const response = await api.post("/auth/user_login", data);
-    console.log('Signup Response:', response.data);
     return response.data;
   } catch (error) {
     console.error(error)
@@ -60,7 +59,7 @@ const SignupForm = () => {
     setShowPassword(!showPassword);
   }
 
-  const saveUserToFirestore = async (user) => {
+  const saveUserToFirestore = async (userData) => {
     try {
       if (!userData || !userData.uid) {
         console.error('Invalid user object:', user);
@@ -94,9 +93,9 @@ const SignupForm = () => {
       }
       const response = await signUpApi(body);
       // Update profile with username
-      // await updateProfile(user, {
-      //     displayName: data.username
-      // });
+      await updateProfile(user, {
+          displayName: data.username
+      });
 
       // // Send email verification
       // await sendEmailVerification(user);
@@ -106,13 +105,14 @@ const SignupForm = () => {
       const userData = {
         user_id: response.user_id,
         uid: user.uid,
-        username: data.username,
         email: data.email,
+        displayName: data.username,
         password: hashedPassword,
-        createdAt: new Date().toISOString(),
-        // Add any other fields you want to store
-      };
+        loginType:'emailAndPassword',
+        createdAt: serverTimestamp(),
 
+        // Add any other fields you want to store 67dae45d6bc65459e42fedc4
+      };
       await saveUserToFirestore(userData);
 
       navigate('/Social-Accounts');
@@ -147,8 +147,8 @@ const SignupForm = () => {
           email: user.email || '',
           displayName: user.displayName || '',
           photoURL: user.photoURL || '',
-          lastLogin: serverTimestamp(),
-          updatedAt: serverTimestamp()
+          loginType:'google',
+          createdAt: serverTimestamp(),
         };
         await saveUserToFirestore(userData);
       }
@@ -299,7 +299,7 @@ const SignupForm = () => {
       </div>
 
       <div className="text-center mt-6">
-        <p className="text-gray-600">
+        <p className="text-gray-400">
           Already have an Account? <a href="/auth/login" className="text-blue-600 hover:underline">Login</a>
         </p>
       </div>
