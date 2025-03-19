@@ -86,8 +86,9 @@ export const FilterProvider = ({ children, showToast }) => {
 
       setFilterId(newFilterId);
       // console.log('New fetched filtered accounts:', newFetchedFilteredAccounts);
+
       await queryClient.invalidateQueries({
-        queryKey: ['filteredUserAccounts', filterId]
+        queryKey: ['filters', filterId]
       });
       
       if (showToast) {

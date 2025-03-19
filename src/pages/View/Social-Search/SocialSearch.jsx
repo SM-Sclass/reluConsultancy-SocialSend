@@ -86,7 +86,7 @@ const SocialSearch = ({ toast, handleCloseToast }) => {
         onClose={handleCloseSideTab}
       />
 
-      <div className="flex flex-col sm:flex-row bg-muted rounded h-full overflow-hidden">
+      <div className="flex flex-col sm:flex-row rounded h-full overflow-hidden">
         <FilterSidebar
           resetFilters={resetFilters}
           loading={loading}
@@ -98,7 +98,7 @@ const SocialSearch = ({ toast, handleCloseToast }) => {
             columns={columns}
             table={table}
             isPending={isPending}
-            className="p-2"
+            className="pl-0 sm:pl-4 "
           />
         </div>
       </div>

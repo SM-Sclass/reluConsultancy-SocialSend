@@ -7,7 +7,7 @@ import CampaignSchedule from './CampaignSchedule';
 import CampaignOptions from './CampaignOptions';
 import { Button } from '@/components/ui/button';
 
-const LeadsManager = () => {
+const CampaignDetail = () => {
     const {setCampaignComponent} = useContext(CampaignContext)
   const [activeTab, setActiveTab] = useState('leads');
   const tabs = [
@@ -36,7 +36,7 @@ const LeadsManager = () => {
   };
   
   return (
-    <div className="w-full p-2 rounded-lg shadow-sm border border-neutral-600">
+    <div className="w-full p-2 rounded-lg shadow-sm border border-secondary">
       <div className="flex items-start mb-8">
         <button
           className="flex items-center text-blue-600 font-medium"
@@ -58,14 +58,14 @@ const LeadsManager = () => {
         </button>
       </div>
       <div className="w-full">
-        <nav className="flex w-full">
+        <nav className="flex w-full overflow-x-auto">
           {tabs.map(tab => (
             <Button
               key={tab.id}
               className={`px-4 py-3 text-sm font-medium rounded-none cursor-pointer ${
                 activeTab === tab.id 
-                  ? 'text-indigo-600 border-b-2 border-indigo-600' 
-                  : 'text-primary '
+                  ? 'text-primary border-b-2 border-indigo-600' 
+                  : 'text-neutral-400 '
               }`}
               onClick={() => setActiveTab(tab.id)}
               variant="secondary"
@@ -82,4 +82,4 @@ const LeadsManager = () => {
   );
 };
 
-export default LeadsManager;
+export default CampaignDetail;

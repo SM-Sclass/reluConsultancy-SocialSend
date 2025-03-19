@@ -44,6 +44,7 @@ const SocialAccounts = () => {
       id: 'select',
       header: ({ table }) => (
         <Checkbox
+        className="text-primary border border-neutral-500"
           checked={
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && 'indeterminate')
@@ -54,6 +55,7 @@ const SocialAccounts = () => {
       ),
       cell: ({ row }) => (
         <Checkbox
+          className="text-primary border border-neutral-500"
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"

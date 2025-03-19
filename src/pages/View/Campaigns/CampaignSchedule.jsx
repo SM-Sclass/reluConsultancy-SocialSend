@@ -38,13 +38,13 @@ function CampaignSchedule() {
         <div className="w-full md:w-60 space-y-4">
           <div>
             <p className="text-sm font-medium mb-2">Starting:</p>
-            <div className="border rounded p-3">
+            <div className=" rounded p-3">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
                     className={cn(
-                      "w-[240px] justify-start text-left font-normal",
+                      "w-full justify-start text-left font-normal",
                       !date && "text-muted-foreground"
                     )}
                   >
@@ -103,7 +103,7 @@ function CampaignSchedule() {
               <div>
                 <label className="block text-sm mb-1">From</label>
                 <select
-                  className="w-full p-2 border rounded appearance-none bg-white pr-8 relative"
+                  className="w-full p-2 border rounded appearance-none bg-secondary pr-8 relative"
                   value={fromTime}
                   onChange={(e) => setFromTime(e.target.value)}
                 >
@@ -116,7 +116,7 @@ function CampaignSchedule() {
               <div>
                 <label className="block text-sm mb-1">To</label>
                 <select
-                  className="w-full p-2 border rounded appearance-none bg-white pr-8"
+                  className="w-full p-2 border rounded appearance-none bg-secondary pr-8"
                   value={toTime}
                   onChange={(e) => setToTime(e.target.value)}
                 >
@@ -129,7 +129,7 @@ function CampaignSchedule() {
               <div>
                 <label className="block text-sm mb-1">Time Zone</label>
                 <select
-                  className="w-full p-2 border rounded appearance-none bg-white pr-8"
+                  className="w-full p-2 border rounded appearance-none bg-secondary pr-8"
                   value={timeZone}
                   onChange={(e) => setTimeZone(e.target.value)}
                 >

@@ -11,6 +11,7 @@ export const columns = [
     id: 'select',
     header: ({ table }) => (
       <Checkbox
+      className="text-primary border border-neutral-500"
         checked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && 'indeterminate')
@@ -21,6 +22,7 @@ export const columns = [
     ),
     cell: ({ row }) => (
       <Checkbox
+      className="text-primary border border-neutral-500"
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
@@ -120,7 +122,6 @@ export const SideTab = ({ isOpen, onClose }) => {
         queryKey: ['filteredUserAccounts', selectedFilter]
       });
       if (selectedFilter) {
-        console.log('Applying filter:', selectedFilter);
         setFilterId(selectedFilter); // Close the side tab after selection
       }
       console.log('Query invalidated successfully');
@@ -141,7 +142,7 @@ export const SideTab = ({ isOpen, onClose }) => {
           <h2 className="text-xl font-bold">Saved Filters</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-500 hover:text-primary"
             aria-label="Close"
           >
             <svg
@@ -191,7 +192,7 @@ export const SideTab = ({ isOpen, onClose }) => {
                       p-3 rounded-lg cursor-pointer transition-colors
                       ${selectedFilter === filter._id
                       ? 'bg-secondary border-2 border-blue-500'
-                      : 'bg-secondary border hover:bg-muted border-gray-200'
+                      : 'bg-secondary border hover:bg-muted border-gray-500'
                     }
                     `}
                 >
@@ -219,7 +220,7 @@ export const SideTab = ({ isOpen, onClose }) => {
         <div className="p-4 border-t flex justify-end space-x-2 bg-muted">
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-md text-primary hover:bg-gray-100"
+            className="px-4 py-2 border border-neutral-500 rounded-md text-primary hover:bg-secondary"
           >
             Cancel
           </button>

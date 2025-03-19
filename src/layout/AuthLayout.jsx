@@ -4,10 +4,12 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Skeleton } from '@/components/ui/skeleton';
 import Logo from "../assets/Social Send.svg";
+import LogoDrk from "../assets/Social Send Drk.svg";
 import { auth } from '@/lib/firebase/config';
-
+import { useTheme } from '@/components/theme-provider';
 
 const AuthLayout = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
@@ -28,7 +30,7 @@ const AuthLayout = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-center">
             <div className="flex items-center">
-              <img src={Logo} alt="Social Send Logo" className="h-10" />
+              <img src={theme === 'dark' ? LogoDrk : Logo} alt="Social Send Logo" className="h-10" />
             </div>
           </div>
         </div>

@@ -9,7 +9,7 @@ function Campaigns() {
 
   return (
     <div>
-      <Breadcrumb onClickFunction={() => setCampaignComponent("Create")} pageName="Campaigns" availableEntries="54" />
+      <Breadcrumb onClickFunction={() => setCampaignComponent("Create")} pageName="Campaigns" availableEntries="54" buttonName="Add Campaign"/>
       <CampaignTable />
     </div>
   )

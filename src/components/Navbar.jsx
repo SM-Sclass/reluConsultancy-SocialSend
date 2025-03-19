@@ -13,6 +13,8 @@ import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 import { signOut } from 'firebase/auth';
 import { auth } from "@/lib/firebase/config";
 import Logo from "../assets/Social Send.svg";
+import LogoDrk from "../assets/Social Send Drk.svg";
+
 import { useTheme } from "./theme-provider";
 import { useSidebar } from "./SidebarContext";
 
@@ -119,7 +121,7 @@ export default function Navbar() {
               </svg>
             </div>
             <div className="flex shrink-0 items-center">
-              <img alt="Your Company" src={Logo} className="h-10 w-auto" />
+              <img alt="Your Company" src={theme === 'dark' ? LogoDrk :Logo} className="h-10 w-auto" />
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 ">
@@ -127,7 +129,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={toggleTheme}
-              className="relative rounded-full p-1 text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-background border-0"
+              className="relative rounded-full p-1 text-muted-foreground hover:text-foreground bg-background border-0"
             >
               <span className="absolute -inset-1.5" />
               <span className="sr-only">Toggle theme</span>
