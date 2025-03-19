@@ -174,14 +174,14 @@ export default function Navbar() {
                     Your Profile
                   </a>
                 </MenuItem>
-                <MenuItem>
+                {/* <MenuItem>
                   <a
                     href="#"
                     className="block px-4 py-2 text-sm text-popover-foreground data-[focus]:bg-accent data-[focus]:outline-none"
                   >
                     Settings
                   </a>
-                </MenuItem>
+                </MenuItem> */}
                 <MenuItem>
                   <div
                     className="block px-4 py-2 text-sm text-popover-foreground data-[focus]:bg-accent data-[focus]:outline-none"
