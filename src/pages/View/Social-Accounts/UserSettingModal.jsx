@@ -122,7 +122,7 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
       />
 
       <div
-        className={`w-1/2 bg-muted h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
+        className={`w-3/4 sm:w-1/2 bg-muted h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
           }`}
         onTransitionEnd={handleTransitionEnd}
       >
