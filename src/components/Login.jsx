@@ -122,7 +122,7 @@ const LoginForm = () => {
 
       navigate('/Social-Accounts');
     } catch (err) {
-      console.error('Google sign-in error:', err);
+      // console.error('Google sign-in error:', err);
       setError(err.message || 'Failed to sign in with Google. Please try again.');
     } finally {
       setLoading(false);
@@ -167,7 +167,7 @@ const LoginForm = () => {
   // };
 
   return (
-    <div className="max-w-md w-full bg-secondary p-8 rounded-lg shadow-md">
+    <div className="max-w-md w-full bg-muted p-8 rounded-lg shadow-md">
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold">Welcome Back!</h2>
         {/* <p className="text-primary mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p> */}
@@ -184,7 +184,7 @@ const LoginForm = () => {
           <input
             type="email"
             placeholder="Email"
-            className={`w-full p-3 border rounded-md ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-3 border rounded-md ${errors.email ? 'border-red-500' : 'border-gray-500'}`}
             {...register('email')}
           />
           {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
@@ -194,12 +194,12 @@ const LoginForm = () => {
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className={`w-full p-3 border rounded-md ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-3 border rounded-md ${errors.password ? 'border-red-500' : 'border-gray-500'}`}
             {...register('password')}
           />
           <button
             type="button"
-            className="absolute right-3 top-3 text-gray-400"
+            className="absolute right-3 top-3 text-primary"
             onClick={togglePasswordVisibility}
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -212,7 +212,8 @@ const LoginForm = () => {
             <input
               type="checkbox"
               id="rememberMe"
-              className="mr-2"
+              className="mr-2 text-primary border border-neutral-500"
+              
               {...register('rememberMe')}
             />
             <label htmlFor="rememberMe" className="text-sm text-primary">Remember Me</label>
@@ -223,7 +224,7 @@ const LoginForm = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 transition-colors disabled:bg-blue-300"
+          className="w-full bg-blue-500 text-white cursor-pointer py-3 rounded-md hover:bg-blue-600 transition-colors disabled:bg-blue-300"
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
@@ -246,7 +247,7 @@ const LoginForm = () => {
           type="button"
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-muted border border-muted py-3 rounded-md hover:bg-secondary transition-colors"
+          className="w-full flex items-center justify-center gap-2 bg-secondary cursor-pointer border border-muted py-3 rounded-md hover:bg-secondary transition-colors"
         >
           <span className="text-red-500">G</span>
           <span>Login with Google</span>

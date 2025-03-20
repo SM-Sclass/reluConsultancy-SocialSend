@@ -30,7 +30,7 @@ const SocialSearch = ({ toast, handleCloseToast, showToast }) => {
     refetchInterval: filterId? 10000 : false,
   })
 
-  const [pagination, setPagination] = useState({pageIndex: 0, pageSize: 10})
+  const [pagination, setPagination] = useState({pageIndex: 0, pageSize: 20})
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})

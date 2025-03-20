@@ -4,6 +4,8 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { Checkbox } from '@/components/ui/checkbox';
 import { fetchAllFilters } from './Service/User.service';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 export const columns = [
   {
@@ -103,6 +105,7 @@ export const Toast = ({ message, type, onClose }) => {
 export const SideTab = ({ isOpen, onClose, filterId, setFilterId }) => {
   const queryClient = useQueryClient();
   const [selectedFilter, setSelectedFilter] = useState(filterId);
+  const [searchFilter, setSearchFilter] = useState('');
   const { isPending, data } = useQuery({
     queryKey: ['filters'],
     queryFn: () => fetchAllFilters()
@@ -128,18 +131,25 @@ export const SideTab = ({ isOpen, onClose, filterId, setFilterId }) => {
     onClose();
   };
 
+  const filteredData = data?.filter((filter) =>
+    filter.filter_name.toLowerCase().includes(searchFilter.toLowerCase())
+  );
+
   return (
     <div
-      className={`fixed top-0 right-0 h-full w-4/5 sm:w-1/2 bg-secondary shadow-lg transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
+      className={`fixed top-0 right-0 h-full w-full  flex shadow-lg transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
         } z-40`}
     >
-      <div className="flex flex-col h-full">
+      <div className='w-1/5 sm:w-1/2'
+        onClick={onClose}
+      />
+      <div className="flex flex-col h-full w-4/5 sm:w-1/2 bg-background">
         {/* Header */}
         <div className="p-4 border-b flex items-center justify-between bg-muted">
           <h2 className="text-xl font-bold">Saved Filters</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-red-500"
+            className="text-gray-500 hover:text-red-500 cursor-pointer"
             aria-label="Close"
           >
             <svg
@@ -156,6 +166,19 @@ export const SideTab = ({ isOpen, onClose, filterId, setFilterId }) => {
               />
             </svg>
           </button>
+        </div>
+
+        <div className="p-4 border-b space-y-4">
+          <Input
+            type="text"
+            placeholder="Search filters..."
+            value={searchFilter}
+            onChange={(e) => setSearchFilter(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <p className="text-sm text-gray-500">
+                Select a filter to apply to your search:
+              </p>
         </div>
 
         {/* Content */}
@@ -175,13 +198,9 @@ export const SideTab = ({ isOpen, onClose, filterId, setFilterId }) => {
             </div>
           )}
 
-          {data && (
-            <div className="space-y-1">
-              <p className="text-sm text-gray-500 mb-3">
-                Select a filter to apply to your search:
-              </p>
-
-              {data.map((filter) => (
+          {filteredData && (
+            <div className="space-y-2">
+              {filteredData.map((filter) => (
                 <div
                   key={filter._id}
                   onClick={() => handleFilterSelect(filter)}
@@ -189,7 +208,7 @@ export const SideTab = ({ isOpen, onClose, filterId, setFilterId }) => {
                       p-3 rounded-lg cursor-pointer transition-colors
                       ${selectedFilter === filter._id && selectedFilter === filterId
                       ? 'bg-secondary border-2 border-blue-500'
-                      : 'bg-secondary border hover:bg-muted border-gray-500'
+                      : 'bg-secondary border hover:bg-muted'
                     }
                     `}
                 >
@@ -206,7 +225,7 @@ export const SideTab = ({ isOpen, onClose, filterId, setFilterId }) => {
             </div>
           )}
 
-          {data && data.length === 0 && (
+          {filteredData && filteredData.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               No saved filters found.
             </div>
@@ -215,13 +234,14 @@ export const SideTab = ({ isOpen, onClose, filterId, setFilterId }) => {
 
         {/* Footer with action buttons */}
         <div className="p-4 border-t flex justify-end space-x-2 bg-muted">
-          <button
+          <Button
             onClick={onClose}
             className="px-4 py-2 border border-neutral-500 rounded-md text-primary hover:bg-secondary"
+            variant="outline"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleApplyFilter}
             disabled={!selectedFilter}
             className={`px-4 py-2 rounded-md text-white 
@@ -231,7 +251,7 @@ export const SideTab = ({ isOpen, onClose, filterId, setFilterId }) => {
               }`}
           >
             Apply Filter
-          </button>
+          </Button>
         </div>
       </div>
     </div>

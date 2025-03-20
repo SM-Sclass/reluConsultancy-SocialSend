@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { userArray } from "../../../Data/Users";
 import { defaultUserStructure } from "../../../Data/Users"
 
@@ -112,8 +112,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
   };
 
 
-  const InstagramCredentialsModal = () => (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 z-20">
+  const   InstagramCredentialsModal = () => (
       <div className="bg-secondary rounded-lg shadow-lg w-96 p-6">
         <h3 className="text-lg font-medium mb-4">Choose Credentials Source</h3>
         <div className="space-y-4">
@@ -149,7 +148,6 @@ const AddSocialAccountPopup = ({ onClose }) => {
           Cancel
         </button>
       </div>
-    </div>
   );
 
   const socialPlatforms = [
@@ -299,10 +297,6 @@ const AddSocialAccountPopup = ({ onClose }) => {
     };
 
     return (
-      <div
-        className="fixed inset-0 flex items-center justify-center bg-gray-900 z-50"
-        onClick={(e) => e.stopPropagation()}
-      >
         <div className="bg-secondary rounded-lg shadow-lg w-96 p-6">
           {showSuccess && (
             <div className="bg-green-100 border-t border-b border-green-500 text-green-700 px-4 py-3 mb-4" role="alert">
@@ -357,18 +351,17 @@ const AddSocialAccountPopup = ({ onClose }) => {
             </div>
           </form>
         </div>
-      </div>
     );
   };
 
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 opacity-75 z-50">
-      <div className="bg-secondary rounded-lg shadow-lg w-2/3 max-w-xl">
-        <div className="flex items-center justify-between p-4 border-b">
+    <div className="fixed inset-0 flex items-center justify-center bg-white/30 backdrop-blur-[2px] z-50">
+      {!showInstagramModal && !showCredentialsModal &&(<div className="bg-secondary rounded-lg shadow-lg w-2/3 max-w-xl">
+        <div className="flex items-start justify-between p-4 border-b">
           <h2 className="text-lg font-medium">Add Social Account</h2>
           <button
-            className="text-gray-500 hover:text-primary text-xl cursor-pointer"
+            className="text-gray-500 hover:text-red-500 text-xl cursor-pointer"
             onClick={onClose}
           >
             &times;
@@ -446,7 +439,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
             ))}
           </div>
         </div>
-      </div>
+      </div>)}
 
       {/* Render Modals */}
       {showInstagramModal && <InstagramCredentialsModal />}

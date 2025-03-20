@@ -35,7 +35,8 @@ export const signUpApi = async (data) => {
     const response = await api.post("/auth/user_login", data);
     return response.data;
   } catch (error) {
-    console.error(error)
+    console.error(error.response.data.result);
+    throw error;
   }
 }
 
@@ -84,14 +85,16 @@ const SignupForm = () => {
       setError('');
 
       // Create user with email and password
-      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      const user = userCredential.user;
-
       const body = {
         email: data.email,
         username: data.username,
       }
       const response = await signUpApi(body);
+
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const user = userCredential.user;
+
+      
       // Update profile with username
       await updateProfile(user, {
           displayName: data.username
@@ -103,7 +106,7 @@ const SignupForm = () => {
       const hashedPassword = await bcrypt.hash(data.password, 10);
       // Store additional user data in Firestore
       const userData = {
-        user_id: response.user_id,
+        user_id: response?.user_id || '',
         uid: user.uid,
         email: data.email,
         displayName: data.username,
@@ -117,8 +120,8 @@ const SignupForm = () => {
 
       navigate('/Social-Accounts');
     } catch (err) {
-      console.error('Signup error:', err);
-      setError(err.message || 'Failed to create account. Please try again.');
+      // console.error('Signup error:', err);
+      setError(err.response.data.result || 'Failed to create account. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -129,8 +132,8 @@ const SignupForm = () => {
       setLoading(true);
       setError('');
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+      const googleAuthResponse = await signInWithPopup(auth, provider);
+      const user = googleAuthResponse.user;
 
       // Store user data in Firestore
       const userRef = doc(db, 'users', user.uid);
@@ -142,20 +145,36 @@ const SignupForm = () => {
         }
         const response = await signUpApi(body);
         const userData = {
-          user_id: response.user_id,
+          user_id: response?.user_id || '',
           uid: user.uid,
-          email: user.email || '',
-          displayName: user.displayName || '',
+          email: user.email,
+          displayName: user.displayName,
           photoURL: user.photoURL || '',
           loginType:'google',
           createdAt: serverTimestamp(),
         };
         await saveUserToFirestore(userData);
       }
+      else {
+        const existingUserData = userDoc.data();
+        if (existingUserData.loginType === 'emailAndPassword') {
+          // Update the existing entry with photoURL and displayName
+          await setDoc(
+            userRef,
+            {
+              displayName: user.displayName || existingUserData.displayName || '',
+              photoURL: user.photoURL || existingUserData.photoURL || '',
+              loginType: 'google', // Update the loginType to Google
+              updatedAt: serverTimestamp(),
+            },
+            { merge: true } // Merge with existing data
+          );
+        }
+      }
 
       navigate('/Social-Accounts');
     } catch (err) {
-      console.error('Google sign-up error:', err);
+      // console.error('Google sign-up error:', err);
       setError(err.message || 'Failed to sign up with Google. Please try again.');
     } finally {
       setLoading(false);

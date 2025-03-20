@@ -30,9 +30,7 @@ const MainLayout = () => {
           <div className="h-full"><Sidebar /></div>
           <div className="w-full h-full overflow-y-auto">
             <main className="w-full p-4">
-              { loading ? (
-                <Skeleton className="h-32 w-full" />
-              ) : <Outlet /> }
+              <Outlet /> 
             </main>
           </div>
         </div>

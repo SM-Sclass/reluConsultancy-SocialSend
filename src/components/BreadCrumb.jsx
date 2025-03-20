@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 // import {
 //   Select,
 //   SelectContent,
@@ -31,7 +32,8 @@ const Breadcrumb = ({ onClickFunction, pageName, availableEntries, table, column
               />
             </svg>
           </button> */}
-          {table && (<input
+          {table && (
+            <Input
             type="text"
             placeholder="Search by Username"
             value={(table.getColumn("username")?.getFilterValue()) ?? ''}

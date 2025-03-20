@@ -107,7 +107,7 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-50 flex justify-end bg-white/30 backdrop-blur-[2px]">
       {toast && (
         <Toast
           message={toast.message}
@@ -116,19 +116,19 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
         />
       )}
       <div
-        className={`absolute inset-0 bg-black transition-opacity duration-300 ${isOpen ? "bg-opacity-10" : "bg-opacity-50 pointer-events-none"
+        className={`absolute inset-0 duration-300 ${isOpen ? "" : "bg-opacity-0 pointer-events-none"
           }`}
         onClick={onClose}
       />
 
       <div
-        className={`w-3/4 sm:w-1/2 bg-muted h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
+        className={`w-4/5 sm:w-1/2 bg-muted h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
           }`}
         onTransitionEnd={handleTransitionEnd}
       >
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold">{username}</h2>
-          <button onClick={onClose} className="text-primary hover:text-red-500">
+          <button onClick={onClose} className="text-primary hover:text-red-500 cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -345,15 +345,15 @@ const SettingsContent = ({ onClose, showToast, templateData, isLoading }) => {
     <div className="space-y-6">
       <div className="space-y-4">
         <h3 className="text-sm font-medium text-primary">Sender Name</h3>
-        <div className="flex gap-4">
+        <div >
 
           {isLoading ? (
-            <>
+            <div className="space-y-4">
               <Skeleton className="h-10 w-full rounded" />
               <Skeleton className="h-10 w-full rounded" />
-            </>
+            </div>
           ) : (
-            <>
+            <div className="flex flex-col sm:flex-row gap-4">
               <input
                 type="text"
                 name="first_name"
@@ -370,7 +370,7 @@ const SettingsContent = ({ onClose, showToast, templateData, isLoading }) => {
                 defaultValue={formData.last_name}
                 onChange={handleInputChange}
               />
-            </>
+            </div>
           )}
         </div>
       </div>
