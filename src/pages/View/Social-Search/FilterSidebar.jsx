@@ -15,7 +15,7 @@ const FilterSidebar = ({table, filters, updateFilter, resetFilters, loading, app
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Filters</h2>
-          <div className="flex gap-2">
+          <div className="flex">
             <Button
               className="hover:bg-secondary rounded cursor-pointer w-fit"
               onClick={handleResetFilter}
