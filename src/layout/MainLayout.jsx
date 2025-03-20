@@ -2,7 +2,6 @@ import React, {useState, useEffect} from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from "@/lib/firebase/config";
-import { Skeleton } from "@/components/ui/skeleton";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { SidebarProvider } from "@/components/SidebarContext";

@@ -14,6 +14,11 @@ import { doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { Eye, EyeOff } from "lucide-react";
 import { signUpApi } from './Signup';
 import { auth, db } from '../lib/firebase/config';
+import { Checkbox } from './ui/checkbox';
+import googleIcon from '../assets/google-icon.svg';
+import { Input } from './ui/input';
+import { Form, FormField, FormLabel, FormItem, FormControl, FormMessage } from './ui/form';
+import { Button } from './ui/button';
 
 // Zod schema for form validation
 const loginSchema = z.object({
@@ -29,7 +34,7 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
@@ -63,7 +68,6 @@ const LoginForm = () => {
     try {
       setLoading(true);
       setError('');
-      console.log(data)
       await signInWithEmailAndPassword(auth, data.email, data.password);
 
       navigate('/Social-Accounts'); // Redirect to dashboard after successful login
@@ -90,15 +94,19 @@ const LoginForm = () => {
           email: user.email,
           username: user.displayName
         }
-        const response = await signUpApi(body);
+        const apiResponse = await signUpApi(body);
+        if (apiResponse.error && apiResponse.error.status !== 400) {
+          throw apiResponse.error;
+        }
         const userData = {
-          user_id: response.user_id,
+          user_id: apiResponse?.error?.response?.data?.user_id || '',
           uid: user.uid,
-          email: user.email || '',
-          displayName: user.displayName || '',
+          email: user.email,
+          displayName: user.displayName,
           photoURL: user.photoURL || '',
           loginType: 'google',
           createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
         };
         await saveUserToFirestore(userData);
       }
@@ -118,7 +126,6 @@ const LoginForm = () => {
           );
         }
       }
-
 
       navigate('/Social-Accounts');
     } catch (err) {
@@ -167,7 +174,7 @@ const LoginForm = () => {
   // };
 
   return (
-    <div className="max-w-md w-full bg-muted p-8 rounded-lg shadow-md">
+    <div className="max-w-md w-full bg-background p-8 rounded-lg shadow-md">
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold">Welcome Back!</h2>
         {/* <p className="text-primary mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p> */}
@@ -179,57 +186,85 @@ const LoginForm = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-4">
-          <input
-            type="email"
-            placeholder="Email"
-            className={`w-full p-3 border rounded-md ${errors.email ? 'border-red-500' : 'border-gray-500'}`}
-            {...register('email')}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="mb-4">
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="Email"
+                    className={` ${form.formState.errors.email ? 'border-red-500' : ''}`}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-start" />
+              </FormItem>
+            )}
           />
-          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
-        </div>
 
-        <div className="mb-4 relative">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            className={`w-full p-3 border rounded-md ${errors.password ? 'border-red-500' : 'border-gray-500'}`}
-            {...register('password')}
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem className="mb-4 relative">
+                <FormControl>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    className={`${form.formState.errors.password ? 'border-red-500' : ''}`}
+                    {...field}
+                  />
+                </FormControl>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="absolute right-1 top-0 text-primary bg-transparent hover:bg-transparent"
+                  onClick={togglePasswordVisibility}
+                >
+                  {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                </Button>
+                <FormMessage className="text-start" />
+              </FormItem>
+            )}
           />
-          <button
-            type="button"
-            className="absolute right-3 top-3 text-primary"
-            onClick={togglePasswordVisibility}
-          >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
-          {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
-        </div>
 
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="rememberMe"
-              className="mr-2 text-primary border border-neutral-500"
-              
-              {...register('rememberMe')}
-            />
-            <label htmlFor="rememberMe" className="text-sm text-primary">Remember Me</label>
+          <div className="flex items-center justify-between mb-6">
+          <FormField
+            control={form.control}
+            name="rememberMe"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center">
+                  <FormControl>
+                    <Checkbox
+                      id="rememberMe"
+                      className={`mr-2 cursor-pointer ${form.formState.errors.agreeToTerms ? 'border-red-500' : ''}`}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel htmlFor="rememberMe" className="text-sm text-gray-500">Remember me</FormLabel>
+                </div>
+                <FormMessage className="text-start"/>
+              </FormItem>
+            )}
+          />
+            <a href="/forgot-password" className="text-sm text-blue-600 hover:underline">Forgot Password?</a>
           </div>
-          <a href="/forgot-password" className="text-sm text-blue-600 hover:underline">Forgot Password?</a>
-        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-500 text-white cursor-pointer py-3 rounded-md hover:bg-blue-600 transition-colors disabled:bg-blue-300"
-        >
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
-
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-500 text-white cursor-pointer rounded-md hover:bg-blue-600 transition-colors disabled:bg-blue-300"
+          >
+            {loading ? 'Logging in...' : 'Login'}
+          </Button>
+        </form>
+      </Form>
       <div className="text-center my-4">Or</div>
 
       <div className="space-y-3">
@@ -243,15 +278,20 @@ const LoginForm = () => {
           <span>Login with Facebook</span>
         </button> */}
 
-        <button
+        <Button
           type="button"
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-secondary cursor-pointer border border-muted py-3 rounded-md hover:bg-secondary transition-colors"
+          variant="secondary"
+          className="w-full flex items-center justify-center gap-2 cursor-pointer rounded-md transition-colors"
         >
-          <span className="text-red-500">G</span>
-          <span>Login with Google</span>
-        </button>
+          <img
+            src={googleIcon}
+            className="w-5 h-5"
+            alt="Google Icon"
+          />
+          <span className='text-primary'>Login with Google</span>
+        </Button>
       </div>
 
       <div className="text-center mt-6">

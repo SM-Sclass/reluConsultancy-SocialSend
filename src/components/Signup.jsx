@@ -1,4 +1,3 @@
-// src/components/SignupForm.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -6,18 +5,21 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import {
   createUserWithEmailAndPassword,
-  // updateProfile,
-  // sendEmailVerification,
   signInWithPopup,
   GoogleAuthProvider,
   updateProfile
-  // FacebookAuthProvider
 } from 'firebase/auth';
-import { setDoc, doc, getDoc,serverTimestamp } from 'firebase/firestore';
+import { setDoc, doc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { Eye, EyeOff } from "lucide-react";
 import bcrypt from 'bcryptjs';
 import { api } from '@/Services/Api';
 import { auth, db } from '../lib/firebase/config';
+import googleIcon from '../assets/google-icon.svg';
+import { Checkbox } from './ui/checkbox';
+import { Input } from './ui/input';
+import { Form, FormField, FormItem, FormControl, FormMessage } from './ui/form';
+import { Button } from './ui/button';
+
 // Zod schema for form validation
 const signupSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),
@@ -33,10 +35,16 @@ const signupSchema = z.object({
 export const signUpApi = async (data) => {
   try {
     const response = await api.post("/auth/user_login", data);
-    return response.data;
+    return {
+      response: response.data,
+      error: null
+    };
   } catch (error) {
-    console.error(error.response.data.result);
-    throw error;
+    console.error(error.response?.data?.result || error.message);
+    return {
+      response: null,
+      error: error
+    }
   }
 }
 
@@ -46,7 +54,7 @@ const SignupForm = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const form = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       username: '',
@@ -63,19 +71,15 @@ const SignupForm = () => {
   const saveUserToFirestore = async (userData) => {
     try {
       if (!userData || !userData.uid) {
-        console.error('Invalid user object:', user);
+        console.error('Invalid user object:', userData);
         return;
       }
 
       const userRef = doc(db, 'users', userData.uid);
-      await setDoc(userRef, userData); // Using merge to update existing data without overwriting
+      await setDoc(userRef, userData, { merge: true }); // Using merge to update existing data without overwriting
     } catch (err) {
-      console.error('Error saving user data to Firestore:', err);
       setError(err.message || 'Failed to save user data. Please try again.');
       // Don't throw error here to avoid blocking the authentication flow
-    }
-    finally {
-      setLoading(false);
     }
   };
 
@@ -83,45 +87,45 @@ const SignupForm = () => {
     try {
       setLoading(true);
       setError('');
-
-      // Create user with email and password
+      
+      // Prepare API request data
       const body = {
         email: data.email,
         username: data.username,
+      };
+      
+      // Call API to register user
+      const apiResponse = await signUpApi(body);
+      if(apiResponse.error){
+        throw apiResponse.error;
       }
-      const response = await signUpApi(body);
-
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
-
       
       // Update profile with username
       await updateProfile(user, {
-          displayName: data.username
+        displayName: data.username
       });
 
-      // // Send email verification
-      // await sendEmailVerification(user);
-
+      // Hash password for storage
       const hashedPassword = await bcrypt.hash(data.password, 10);
+      
       // Store additional user data in Firestore
       const userData = {
-        user_id: response?.user_id || '',
+        user_id: apiResponse?.response?.user_id || '',
         uid: user.uid,
         email: data.email,
         displayName: data.username,
         password: hashedPassword,
-        loginType:'emailAndPassword',
+        loginType: 'emailAndPassword',
         createdAt: serverTimestamp(),
-
-        // Add any other fields you want to store 67dae45d6bc65459e42fedc4
+        updatedAt: serverTimestamp()
       };
+      
       await saveUserToFirestore(userData);
-
       navigate('/Social-Accounts');
     } catch (err) {
-      // console.error('Signup error:', err);
-      setError(err.response.data.result || 'Failed to create account. Please try again.');
+      setError(err.response?.data?.result || err.message || 'Failed to create account. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -135,91 +139,62 @@ const SignupForm = () => {
       const googleAuthResponse = await signInWithPopup(auth, provider);
       const user = googleAuthResponse.user;
 
-      // Store user data in Firestore
+      // Check if user exists in Firestore
       const userRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userRef);
+      
       if (!userDoc.exists()) {
+        // New user - register with API and create Firestore document
         const body = {
           email: user.email,
           username: user.displayName
-        }
-        const response = await signUpApi(body);
+        };
+        
+        const apiResponse = await signUpApi(body);
+        console.log(apiResponse);
+        if(apiResponse.error.status !== 400){
+          throw apiResponse.error;
+        } 
         const userData = {
-          user_id: response?.user_id || '',
+          user_id: apiResponse?.error?.response?.data?.user_id || '',
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
           photoURL: user.photoURL || '',
-          loginType:'google',
+          loginType: 'google',
           createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
         };
+        
         await saveUserToFirestore(userData);
-      }
-      else {
+      } else {
+        // Existing user - update information
         const existingUserData = userDoc.data();
         if (existingUserData.loginType === 'emailAndPassword') {
-          // Update the existing entry with photoURL and displayName
+          // Update the existing entry with Google info
           await setDoc(
             userRef,
             {
               displayName: user.displayName || existingUserData.displayName || '',
               photoURL: user.photoURL || existingUserData.photoURL || '',
-              loginType: 'google', // Update the loginType to Google
+              loginType: 'google',
               updatedAt: serverTimestamp(),
             },
-            { merge: true } // Merge with existing data
+            { merge: true }
           );
         }
       }
 
       navigate('/Social-Accounts');
     } catch (err) {
-      // console.error('Google sign-up error:', err);
       setError(err.message || 'Failed to sign up with Google. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // const handleFacebookSignup = async () => {
-  //   try {
-  //     setLoading(true);
-  //     setError('');
-  //     const provider = new FacebookAuthProvider();
-  //     const result = await signInWithPopup(auth, provider);
-  //     const user = result.user;
-
-  //     const userRef = doc(db, 'users', user.uid);
-  //     const userDoc = await getDoc(userRef);
-  //     if (!userDoc.exists()) {
-  //       const body = {
-  //         email: user.email,
-  //         username: user.displayName
-  //       }
-  //       const response = await signUpApi(body);
-  //       const userData = {
-  //         user_id: response.user_id,
-  //         uid: user.uid,
-  //         email: user.email || '',
-  //         displayName: user.displayName || '',
-  //         photoURL: user.photoURL || '',
-  //         lastLogin: serverTimestamp(),
-  //         updatedAt: serverTimestamp()
-  //       };
-  //       await saveUserToFirestore(userData);
-  //     }
-
-  //     navigate('/Social-Accounts');
-  //   } catch (err) {
-  //     console.error('Facebook sign-up error:', err);
-  //     setError(err.message || 'Failed to sign up with Facebook. Please try again.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   return (
-    <div className="max-w-md w-full bg-secondary p-8 rounded-lg shadow-md">
+    <div className="max-w-md w-full bg-background p-8 rounded-lg shadow-md">
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold">Create Account</h2>
         <p className="text-primary mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
@@ -230,91 +205,121 @@ const SignupForm = () => {
           {error}
         </div>
       )}
-
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Username"
-            className={`w-full p-3 border rounded-md ${errors.username ? 'border-red-500' : 'border-gray-500'}`}
-            {...register('username')}
+      
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem className="mb-4">
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder="Username"
+                    className={` ${form.formState.errors.username ? 'border-red-500' : ''}`}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-start"/>
+              </FormItem>
+            )}
           />
-          {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>}
-        </div>
 
-        <div className="mb-4">
-          <input
-            type="email"
-            placeholder="Email"
-            className={`w-full p-3 border rounded-md ${errors.email ? 'border-red-500' : 'border-gray-500'}`}
-            {...register('email')}
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="mb-4">
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="Email"
+                    className={` ${form.formState.errors.email ? 'border-red-500' : ''}`}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-start"/>
+              </FormItem>
+            )}
           />
-          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
-        </div>
 
-        <div className="mb-4 relative">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            className={`w-full p-3 border rounded-md ${errors.password ? 'border-red-500' : 'border-gray-500'}`}
-            {...register('password')}
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem className="mb-4 relative">
+                <FormControl>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    className={`${form.formState.errors.password ? 'border-red-500' : ''}`}
+                    {...field}
+                  />
+                </FormControl>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="absolute right-1 top-0 text-primary bg-transparent hover:bg-transparent"
+                  onClick={togglePasswordVisibility}
+                >
+                  {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                </Button>
+                <FormMessage className="text-start"/>
+              </FormItem>
+            )}
           />
-          <button
-            type="button"
-            className="absolute right-3 top-3 text-gray-400"
-            onClick={togglePasswordVisibility}
+
+          <FormField
+            control={form.control}
+            name="agreeToTerms"
+            render={({ field }) => (
+              <FormItem className="mb-6">
+                <div className="flex items-center">
+                  <FormControl>
+                    <Checkbox
+                      id="agreeToTerms"
+                      className={`mr-2 cursor-pointer ${form.formState.errors.agreeToTerms ? 'border-red-500' : ''}`}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <label htmlFor="agreeToTerms" className="text-sm text-primary">
+                    I agree to the social send privacy <a href="/agreement" className="text-blue-600 hover:underline">agreement</a>.
+                  </label>
+                </div>
+                <FormMessage className="text-start"/>
+              </FormItem>
+            )}
+          />
+
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-500 text-white cursor-pointer py-3 rounded-md hover:bg-blue-600 transition-colors disabled:bg-blue-300"
           >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
-          {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
-        </div>
-
-        <div className="mb-6">
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="agreeToTerms"
-              className={`mr-2 ${errors.agreeToTerms ? 'border-red-500' : ''}`}
-              {...register('agreeToTerms')}
-            />
-            <label htmlFor="agreeToTerms" className="text-sm text-primary">
-              I agree to the social send privacy <a href="/agreement" className="text-blue-600 hover:underline">agreement</a>.
-            </label>
-          </div>
-          {errors.agreeToTerms && <p className="text-red-500 text-sm mt-1">{errors.agreeToTerms.message}</p>}
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 transition-colors disabled:bg-blue-300"
-        >
-          {loading ? 'Creating Account...' : 'Signup'}
-        </button>
-      </form>
+            {loading ? 'Creating Account...' : 'Signup'}
+          </Button>
+        </form>
+      </Form>
 
       <div className="text-center my-4">Or</div>
 
       <div className="space-y-3">
-        {/* <button
-          type="button"
-          onClick={handleFacebookSignup}
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-muted border border-muted py-3 rounded-md hover:bg-secondary transition-colors"
-        >
-          <span className="text-blue-600">f</span>
-          <span>Signup with Facebook</span>
-        </button> */}
-
-        <button
+        <Button
           type="button"
           onClick={handleGoogleSignup}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-muted border border-muted py-3 rounded-md hover:bg-secondary transition-colors"
+          variant="secondary"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-md transition-colors cursor-pointer"
         >
-          <span className="text-red-500">G</span>
-          <span>Signup with Google</span>
-        </button>
+          <img
+            src={googleIcon}
+            alt="Google Icon"
+            className="w-5 h-5"
+          />
+          <span className='text-primary'>Signup with Google</span>
+        </Button>
       </div>
 
       <div className="text-center mt-6">

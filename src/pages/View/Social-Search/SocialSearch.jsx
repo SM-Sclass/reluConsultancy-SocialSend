@@ -15,22 +15,22 @@ import { fetchTargetByFilterId } from './Service/User.service';
 import { columns, Toast, SideTab } from './helper';
 
 const SocialSearch = ({ toast, handleCloseToast, showToast }) => {
-  const { 
-    filters, 
-    updateFilter, 
-    filterId, 
-    setFilterId, 
-    applyFilters, 
-    resetFilters, 
-    loading 
+  const {
+    filters,
+    updateFilter,
+    filterId,
+    setFilterId,
+    applyFilters,
+    resetFilters,
+    loading
   } = useFilters(showToast);
   const { isPending, data } = useQuery({
     queryKey: ['filteredUserAccounts', filterId],
     queryFn: () => fetchTargetByFilterId(filterId),
-    refetchInterval: filterId? 10000 : false,
+    // refetchInterval: filterId? 10000 : false,
   })
 
-  const [pagination, setPagination] = useState({pageIndex: 0, pageSize: 20})
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
@@ -43,6 +43,8 @@ const SocialSearch = ({ toast, handleCloseToast, showToast }) => {
   const handleCloseSideTab = () => {
     setIsSideTabOpen(false);
   };
+
+
 
   const table = useReactTable({
     data: data || [],
@@ -89,17 +91,19 @@ const SocialSearch = ({ toast, handleCloseToast, showToast }) => {
         onClose={handleCloseSideTab}
         filterId={filterId}
         setFilterId={setFilterId}
+        table={table}
       />
 
       <div className="flex flex-col sm:flex-row rounded h-full overflow-hidden">
         <FilterSidebar
-        filters={filters}
+        table={table}
+          filters={filters}
           updateFilter={updateFilter}
           resetFilters={resetFilters}
           loading={loading}
           applyFilters={applyFilters}
         />
-        <div className="flex-1 h-full overflow-y-auto">
+        <div className="flex-1 flex-col h-full overflow-y-auto">
           <Listing
             columns={columns}
             table={table}

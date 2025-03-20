@@ -4,7 +4,11 @@ import FilterSection from './FilterSection';
 import { FILTERS_CONFIG } from './FilterFieldConfig';
 import { Button } from '@/components/ui/button';
 
-const FilterSidebar = ({ filters, updateFilter, resetFilters, loading, applyFilters }) => {
+const FilterSidebar = ({table, filters, updateFilter, resetFilters, loading, applyFilters }) => {
+  const handleResetFilter=()=>{
+    table.resetRowSelection();
+    resetFilters();
+  }
 
   return (
     <div className="w-full sm:w-64  sm:border-r  sm:border-gray-200 p-4 h-full overflow-y-auto">
@@ -14,7 +18,7 @@ const FilterSidebar = ({ filters, updateFilter, resetFilters, loading, applyFilt
           <div className="flex gap-2">
             <Button
               className="hover:bg-secondary rounded cursor-pointer w-fit"
-              onClick={resetFilters}
+              onClick={handleResetFilter}
               title="Reset filters"
               variant="ghost"
             >

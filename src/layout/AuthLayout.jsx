@@ -25,8 +25,8 @@ const AuthLayout = () => {
     return () => unsubscribe();
   }, [navigate]);
   return (
-    <div className="min-h-screen bg-secondary flex flex-col">
-      <header className="py-4 bg-muted shadow-sm">
+    <div className="min-h-screen bg-background flex flex-col">
+      <header className="py-4 shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex justify-center">
             <div className="flex items-center">
@@ -51,9 +51,9 @@ const AuthLayout = () => {
       </main>
 
    
-      <footer className="py-4 bg-muted border-t">
+      <footer className="py-4 border-t">
         <div className="container mx-auto px-4">
-          <div className="text-center text-gray-500 text-sm">
+          <div className="text-center text-primary text-sm">
             &copy; {new Date().getFullYear()} Social Send. All rights reserved.
           </div>
         </div>

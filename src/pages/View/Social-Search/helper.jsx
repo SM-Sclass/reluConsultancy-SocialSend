@@ -102,7 +102,7 @@ export const Toast = ({ message, type, onClose }) => {
   );
 };
 
-export const SideTab = ({ isOpen, onClose, filterId, setFilterId }) => {
+export const SideTab = ({ isOpen, onClose, filterId, setFilterId, table }) => {
   const queryClient = useQueryClient();
   const [selectedFilter, setSelectedFilter] = useState(filterId);
   const [searchFilter, setSearchFilter] = useState('');
@@ -119,6 +119,10 @@ export const SideTab = ({ isOpen, onClose, filterId, setFilterId }) => {
   const handleApplyFilter = async () => {
     try {
       // Fixed query invalidation with proper format
+      if (typeof table !== 'undefined') {
+        table.resetRowSelection();
+      }
+
       await queryClient.invalidateQueries({
         queryKey: ['filteredUserAccounts', selectedFilter]
       });
@@ -126,7 +130,7 @@ export const SideTab = ({ isOpen, onClose, filterId, setFilterId }) => {
         setFilterId(selectedFilter); // Close the side tab after selection
       }
     } catch (err) {
-      console.error('Error invalidating query:', err);
+      // console.error('Error invalidating query:', err);
     }
     onClose();
   };
