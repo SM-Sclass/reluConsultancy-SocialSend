@@ -4,7 +4,7 @@ import { api } from "@/Services/Api";
 export const filterUsers = async(filterData) => {
     try {
         const response = await api.post('/api/filter', {
-            user: "67b8786fee1dfdb84e89c55d", // Hardcoded user ID
+            user: "67dbcd214597acae7bdf3f6c", // Hardcoded user ID
             ...filterData
         });
         

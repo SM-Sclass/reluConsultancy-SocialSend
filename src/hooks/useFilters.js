@@ -6,7 +6,7 @@ import { filterUsers } from '@/pages/View/Social-Search/Service/Filter.service';
 export const useFilters = (showToast) => {
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState({
-    user: "67b8786fee1dfdb84e89c55d",
+    user: "67dbcd214597acae7bdf3f6c",
     location: [],
     hashtag: [],
     filter_name: "",
@@ -85,7 +85,7 @@ export const useFilters = (showToast) => {
   // Reset all filters
   const resetFilters = useCallback(() => {
     const initialFilters = {
-      user: "67b8786fee1dfdb84e89c55d",
+      user: "67dbcd214597acae7bdf3f6c",
       location: [],
       hashtag: [],
       filter_name: "",

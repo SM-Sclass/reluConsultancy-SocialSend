@@ -6,13 +6,14 @@ import { fetchAllFilters } from './Service/User.service';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
 
 export const columns = [
   {
     id: 'select',
     header: ({ table }) => (
       <Checkbox
-      className="text-primary border border-neutral-500"
+        className="text-primary border border-neutral-500"
         checked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && 'indeterminate')
@@ -23,7 +24,7 @@ export const columns = [
     ),
     cell: ({ row }) => (
       <Checkbox
-      className="text-primary border border-neutral-500"
+        className="text-primary border border-neutral-500"
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
@@ -74,8 +75,81 @@ export const columns = [
     accessorKey: 'keywords in bio',
     header: 'Keywords in Bio',
     cell: ({ row }) => {
+      const value = row.getValue('keywords in bio');
+      const truncatedValue = value?.length > 30 ? `${value.slice(0, 30)}...` : value;
+
+      return (
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <div className="cursor-pointer text-ellipsis overflow-hidden whitespace-nowrap">
+              {truncatedValue}
+            </div>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-80">
+            <div className="text-sm">{value}</div>
+          </HoverCardContent>
+        </HoverCard>
+      );
+    },
+  },
+  {
+    accessorKey: 'urls_in_bio',
+    header: 'Url in Bio',
+    cell: ({ row }) => {
+      const value = row.getValue('urls_in_bio');
+      const maxVisibleItems = 1; // Maximum number of items to display before truncating
+
+      // Truncate the array if it exceeds the maxVisibleItems
+      const truncatedValue =
+        Array.isArray(value) && value.length > maxVisibleItems
+          ? `${value.slice(0, maxVisibleItems).join(', ')}...`
+          : Array.isArray(value)
+            ? value.join(', ')
+            : '';
+      return (
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <div className="cursor-pointer text-ellipsis overflow-hidden whitespace-nowrap text-start">
+              {truncatedValue || 'No URLs'}
+            </div>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-80">
+            <div className="text-sm space-y-1">
+              {Array.isArray(value) && value.length > 0 ? (
+                value.map((url, index) => (
+                  <div key={index} className="truncate">
+                    {url}
+                  </div>
+                ))
+              ) : (
+                <div>No URLs available</div>
+              )}
+            </div>
+          </HoverCardContent>
+        </HoverCard>
+      );
+    },
+  },
+  {
+    accessorKey: 'bio_email',
+    header: 'Bio Email',
+    cell: ({ row }) => {
+      return <HoverCard>
+        <HoverCardTrigger asChild>
+          <div className="text-sm text-start">{row.getValue('bio_email') || 'Not Available'}</div>
+        </HoverCardTrigger>
+        {row.getValue("bio_email") && <HoverCardContent className="w-80">
+          <div className="text-sm">{row.getValue('bio_email')}</div>
+        </HoverCardContent>}
+      </HoverCard>
+    }
+  },
+  {
+    accessorKey: 'no_of_posts',
+    header: 'No. of Posts',
+    cell: ({ row }) => {
       return <div className="flex items-center gap-2">
-        {row.getValue('keywords in bio')}
+        {row.getValue('no_of_posts')}
       </div>
     }
 
@@ -181,8 +255,8 @@ export const SideTab = ({ isOpen, onClose, filterId, setFilterId, table }) => {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <p className="text-sm text-gray-500">
-                Select a filter to apply to your search:
-              </p>
+            Select a filter to apply to your search:
+          </p>
         </div>
 
         {/* Content */}
