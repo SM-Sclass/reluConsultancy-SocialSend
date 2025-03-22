@@ -20,18 +20,12 @@ import { Button } from "./ui/button";
 export default function Navbar() {
   const user = auth.currentUser;
   const { theme, setTheme } = useTheme();
-  const { isOpen, toggleSidebar, toggleCollapse, isMobileScreen, closeSidebar } = useSidebar();
+  const { toggleSidebar, toggleCollapse, isMobileScreen, closeSidebar } = useSidebar();
   const navigate = useNavigate();
   // Detect if we're on mobile
   const handleSidebarToggle = () => {
-    console.log('close sidebar1', isOpen, isMobileScreen)
-    if (isMobileScreen && !isOpen) {
-
+    if (isMobileScreen) {
       toggleSidebar();
-    }
-    else if (isMobileScreen && isOpen) {
-      console.log('close sidebar')
-      closeSidebar();
     }
     else {
       toggleCollapse();
