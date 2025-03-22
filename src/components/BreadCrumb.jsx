@@ -1,22 +1,13 @@
 import React from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectGroup,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue
-// } from '@/components/ui/select'
 
-const Breadcrumb = ({ onClickFunction, pageName, availableEntries, table, columns, buttonName }) => {
-  // const [filter, setFilter] = useState('');
+const Breadcrumb = ({ onClickFunction, pageName, table, availableEntries, buttonName }) => {
   return (
     <div className="flex flex-col mb-4 py-2 px-3 sm:flex-row items-center justify-between bg-secondary shadow-sm rounded-md gap-4">
       <div className="flex items-center space-x-2 w-full sm:w-auto">
         <h2 className="text-lg font-medium truncate">
-          {pageName} ({availableEntries || '0'})
+          {pageName} ({availableEntries})
         </h2>
       </div>
 

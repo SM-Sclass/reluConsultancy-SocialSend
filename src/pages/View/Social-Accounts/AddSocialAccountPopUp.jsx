@@ -356,7 +356,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
 
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-white/30 backdrop-blur-[2px] z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/20 dark:bg-white/10 z-50">
       {!showInstagramModal && !showCredentialsModal &&(<div className="bg-secondary rounded-lg shadow-lg w-2/3 max-w-xl">
         <div className="flex items-start justify-between p-4 border-b">
           <h2 className="text-lg font-medium">Add Social Account</h2>

@@ -1,59 +1,39 @@
-import {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import Avatar from "react-avatar";
+import { ChevronDown, LogOut, User } from "lucide-react"
 import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-} from "@headlessui/react";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 import { signOut } from 'firebase/auth';
 import { auth } from "@/lib/firebase/config";
 import Logo from "../assets/Social Send.svg";
 import LogoDrk from "../assets/Social Send Drk.svg";
 import { useTheme } from "./theme-provider";
-import { useSidebar } from "./SidebarContext";
-
-const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Team", href: "#", current: false },
-  { name: "Projects", href: "#", current: false },
-  { name: "Calendar", href: "#", current: false },
-];
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+import { useSidebar } from "../store/sidebarStore";
+import { Button } from "./ui/button";
 
 export default function Navbar() {
   const user = auth.currentUser;
   const { theme, setTheme } = useTheme();
-  const { toggleSidebar, toggleCollapse } = useSidebar();
-  const [isMobile, setIsMobile] = useState(false);
+  const { isOpen, toggleSidebar, toggleCollapse, isMobileScreen, closeSidebar } = useSidebar();
   const navigate = useNavigate();
   // Detect if we're on mobile
-  useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 640); // 640px is sm breakpoint in Tailwind
-    };
-    // Check initially
-    checkIsMobile();
-    
-    // Add resize listener
-    window.addEventListener('resize', checkIsMobile);
-
-    // Clean up
-    return () => window.removeEventListener('resize', checkIsMobile);
-  }, []);
-
   const handleSidebarToggle = () => {
-    if (isMobile) {
+    console.log('close sidebar1', isOpen, isMobileScreen)
+    if (isMobileScreen && !isOpen) {
+
       toggleSidebar();
-    } else {
+    }
+    else if (isMobileScreen && isOpen) {
+      console.log('close sidebar')
+      closeSidebar();
+    }
+    else {
       toggleCollapse();
     }
   };
@@ -61,38 +41,24 @@ export default function Navbar() {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  const handleLogOut = async() => {
+  const handleLogOut = async () => {
     try {
-    // Sign out the user
-    await signOut(auth);
-    navigate('/auth/login')
+      // Sign out the user
+      await signOut(auth);
+      navigate('/auth/login')
     } catch (error) {
       console.error('Error logging out:', error);
     }
   }
 
   return (
-    <Disclosure as="nav" className="bg-muted border border-border">
-      <div className="mx-auto max-w-full w-full px-2 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-full w-full px-2 sm:px-4 ">
         <div className="relative flex h-16 items-center justify-between">
-          {/* <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-          
-            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-secondary hover:text-secondary-foreground focus:outline-none focus:ring-2 focus:ring-ring">
-              <span className="absolute -inset-0.5" />
-              <span className="sr-only">Open main menu</span>
-              <Bars3Icon
-                aria-hidden="true"
-                className="block size-6 group-data-[open]:hidden"
-              />
-              <XMarkIcon
-                aria-hidden="true"
-                className="hidden size-6 group-data-[open]:block"
-              />
-            </DisclosureButton>
-          </div> */}
           <div className="flex gap-10 items-center justify-start sm:items-stretch sm:justify-start">
-            <div className="flex items-center justify-start"
-              onClick={handleSidebarToggle}>
+            <Button className="flex items-center justify-start cursor-pointer"
+              onClick={handleSidebarToggle}
+              variant="ghost"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="11"
@@ -100,7 +66,7 @@ export default function Navbar() {
                 viewBox="0 0 18 18"
                 fill="none"
                 className="text-foreground"
-                aria-label={isMobile ? "Toggle sidebar" : "Collapse sidebar"}
+                aria-label={isMobileScreen ? "Toggle sidebar" : "Collapse sidebar"}
               >
                 <path d="M18 15.75H0V18H18V15.75Z" fill="currentColor" />
                 <path d="M18 0H0V2.25H18V0Z" fill="currentColor" />
@@ -119,9 +85,9 @@ export default function Navbar() {
                   fill="currentColor"
                 />
               </svg>
-            </div>
-            <div className="flex shrink-0 items-center">
-              <img alt="Your Company" src={theme === 'dark' ? LogoDrk :Logo} className="h-10 w-auto" />
+            </Button>
+            <div className="flex shrink-0 items-center ">
+              <img alt="Your Company" src={theme === 'dark' ? LogoDrk : Logo} className="h-10 w-auto" />
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 ">
@@ -140,21 +106,11 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* <button
-              type="button"
-              className="relative rounded-full p-1 ml-3 text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-background border-0"
-            >
-              <span className="absolute -inset-1.5" />
-              <span className="sr-only">View notifications</span>
-              <BellIcon aria-hidden="true" className="size-6" />
-            </button> */}
 
             {/* Profile dropdown */}
-            <Menu as="div" className="relative ml-3">
-              <div>
-                <MenuButton className="relative flex rounded-full bg-accent text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 p-0 border-0">
-                  <span className="absolute -inset-1.5" />
-                  <span className="sr-only">Open user menu</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <div className="gap-2 ml-2 p-2 cursor-pointer flex items-center">
                   {user?.photoURL ? (
                     <img
                       alt="User Avatar"
@@ -169,62 +125,32 @@ export default function Navbar() {
                       className="size-8"
                     />
                   )}
-                </MenuButton>
-              </div>
-              <MenuItems
-                transition
-                className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-popover py-1 shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-              >
-                <MenuItem>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-popover-foreground data-[focus]:bg-accent data-[focus]:outline-none"
-                  >
-                    Your Profile
-                  </a>
-                </MenuItem>
-                {/* <MenuItem>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-popover-foreground data-[focus]:bg-accent data-[focus]:outline-none"
-                  >
-                    Settings
-                  </a>
-                </MenuItem> */}
-                <MenuItem>
-                  <div
-                    className="block px-4 py-2 text-sm text-popover-foreground data-[focus]:bg-accent data-[focus]:outline-none"
-                    onClick={handleLogOut}
-                  >
-                    Sign out
+                  <span className="hidden sm:inline">{user?.displayName || ''}</span>
+                  <ChevronDown className="h-4 w-4" />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem>
+                  <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/profile')}>
+                    <User className="h-4 w-4" />
+                    <span>Profile</span>
                   </div>
-                </MenuItem>
-              </MenuItems>
-            </Menu>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-red-500"
+                  onClick={handleLogOut}
+                >
+                  <div className="flex items-center gap-2 cursor-pointer">
+                    <LogOut className="h-4 w-4" />
+                    <span>Logout</span>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
 
-      <DisclosurePanel className="sm:hidden">
-        <div className="space-y-1 px-2 pb-3 pt-2">
-          {navigation.map((item) => (
-            <DisclosureButton
-              key={item.name}
-              as="a"
-              href={item.href}
-              aria-current={item.current ? "page" : undefined}
-              className={classNames(
-                item.current
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-secondary hover:text-secondary-foreground",
-                "block rounded-md px-3 py-2 text-base font-medium border-0"
-              )}
-            >
-              {item.name}
-            </DisclosureButton>
-          ))}
-        </div>
-      </DisclosurePanel>
-    </Disclosure>
   );
 }

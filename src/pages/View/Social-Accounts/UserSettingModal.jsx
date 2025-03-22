@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { X, Loader2 } from "lucide-react";
 import {
@@ -21,6 +21,8 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
     queryKey: ['TemplateMessage',user_id],
     queryFn: () => getTemplateMessage(user_id),
   })
+
+  const sideRef = useRef(null)
 
   const showToast = (message, type) => {
     setToast({ message, type });
@@ -91,8 +93,8 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
 
   const TabButton = ({ tabId }) => (
     <button
-      className={`px-6 py-3 ${activeTab === tabId
-        ? "border-b-2 border-blue-500 text-blue-500"
+      className={`px-6 py-3 cursor-pointer ${activeTab === tabId
+        ? "border-b-2 border-blue-500 font-semibold"
         : "text-primary"
         }`}
       onClick={() => setActiveTab(tabId)}
@@ -107,7 +109,7 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-white/30 backdrop-blur-[2px]">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/20 dark:bg-white/10">
       {toast && (
         <Toast
           message={toast.message}
@@ -122,18 +124,18 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
       />
 
       <div
-        className={`w-4/5 sm:w-1/2 bg-muted h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
+        className={`w-5/5 sm:w-1/2 bg-background h-full shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
           }`}
         onTransitionEnd={handleTransitionEnd}
       >
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold">{username}</h2>
+        <div className="flex items-center justify-between p-4">
+          <h2 className="text-lg ">{username}</h2>
           <button onClick={onClose} className="text-primary hover:text-red-500 cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="flex border-b">
+        <div className="flex border-b overflow-auto">
           {Object.keys(TABS).map((tabId) => (
             <TabButton key={tabId} tabId={tabId} />
           ))}

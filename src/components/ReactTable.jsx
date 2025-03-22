@@ -129,7 +129,7 @@ const Listing = ({
             </div>
           ) : (
             <Table>
-              <TableHeader className="bg-secondary">
+              <TableHeader className="dark:bg-secondary">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -147,7 +147,7 @@ const Listing = ({
                   </TableRow>
                 ))}
               </TableHeader>
-              <TableBody className="bg-muted">
+              <TableBody className="dark:bg-muted">
                 {table.getRowModel().rows.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow

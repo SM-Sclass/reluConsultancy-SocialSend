@@ -44,7 +44,7 @@ const SocialAccounts = () => {
       id: 'select',
       header: ({ table }) => (
         <Checkbox
-        className="text-primary border border-neutral-500"
+          className="text-primary border border-neutral-500"
           checked={
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && 'indeterminate')
@@ -102,8 +102,8 @@ const SocialAccounts = () => {
         return (<span className="text-primary flex">
           {row.getValue('dailyConnections')}
         </span>
-      )
-    }
+        )
+      }
     },
     {
       accessorKey: 'warmupEnabled',
@@ -112,8 +112,8 @@ const SocialAccounts = () => {
         return (<span className={`flex ${row.getValue('warmupEnabled') ? 'text-green-600' : 'text-red-600'}`}>
           {row.getValue('warmupEnabled') ? 'Yes' : 'No'}
         </span>
-      )
-    }
+        )
+      }
     }
   ];
 
@@ -141,7 +141,12 @@ const SocialAccounts = () => {
 
   return (
     <div className='w-full'>
-      <Breadcrumb onClickFunction={() => { setShowPopUp(true) }} pageName="Social Accounts" availableEntries="67" table={table} columns={columns} buttonName="Add New" />
+      <Breadcrumb
+        onClickFunction={() => { setShowPopUp(true) }}
+        pageName="Social Accounts"
+        availableEntries={userArray?.length || '0'}
+        table={table}
+        buttonName="Add New" />
       <Listing
         columns={columns}
         table={table}

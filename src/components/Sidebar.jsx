@@ -1,6 +1,6 @@
-import React from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { useSidebar } from './SidebarContext';
+import React ,{useEffect, useRef}from 'react'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { useSidebar } from "../store/sidebarStore";
 import CampaignLogo from '../assets/CampaignSVG.svg';
 
 const routes = [
@@ -79,41 +79,67 @@ const routes = [
 ];
 
 const Sidebar = () => {
-  const { isOpen, isCollapsed } = useSidebar();
+  const { isOpen, isCollapsed, isMobileScreen, closeSidebar } = useSidebar();
   const navigate = useNavigate();
   const location = useLocation();
 
+  const sidebarRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // If the sidebar is open and the click is outside the sidebar's content
+      if (isOpen && 
+        isMobileScreen && 
+        sidebarRef.current && 
+        !sidebarRef.current.contains(event.target) && 
+        event.target.closest('aside')) {
+        closeSidebar();
+      }
+    };
+
+    // Add the event listener when the component mounts and sidebar is open
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    // Cleanup the event listener when the component unmounts or sidebar closes
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, isMobileScreen, closeSidebar]);
+
+  const handleRouteChange = (path) => {
+    navigate(path);
+    if(isMobileScreen) {
+      closeSidebar();
+    }
+  }
+
   return (
     <aside
-      className={` ${isCollapsed ? 'w-20' : 'w-[15vw]'
-        } 
-        h-full
-         transition-all duration-300 
-         ${isOpen ? 'translate-x-0 shadow-lg sm:shadow-none' : '-translate-x-full'
-        } sm:translate-x-0
-          sm:block
-        fixed sm:relative
-         left-0 z-40 
-        `
-      }
-      aria-label="Sidebar"
+    className={` ${isMobileScreen ? 'w-full' : isCollapsed ? 'sm:w-20' : 'sm:w-[20vw]'} h-full transition-all duration-300 sm:max-w-64
+      ${isOpen ? 'translate-x-0 shadow-lg sm:shadow-none' : '-translate-x-full'} sm:translate-x-0 sm:block fixed sm:relative
+      left-0 z-40 
+      `
+    }
+    aria-label="Sidebar"
     >
-      <div className="relative h-full overflow-y-auto bg-[#FFF] dark:bg-secondary">
-        <ul className="space-y-2 font-medium">
+      <div 
+      ref={sidebarRef}
+      className="h-full overflow-y-auto bg-[#FFF] bg-background max-w-64">
+        <ul className="font-medium">
           {routes.map((route, index) => (
             <li key={index}>
-              <a
-                href={route.path}
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(route.path);
-                }}
-                className={`flex items-center justify-start p-3 sm:p-5 text-gray-900  dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${location.pathname === route.path ? 'bg-[#e3e5f9] border-l-8 border-[#4A5FFF] dark:bg-muted ' : 'ml-2'
-                  }`}
+              <Link
+                to={route.path}
+                onClick={() => handleRouteChange(route.path)}
+                className={`flex items-center justify-start p-3 sm:p-5
+                  text-gray-900  dark:text-white hover:bg-indigo-400/20 dark:hover:bg-gray-700 group 
+                  ${location.pathname === route.path ? 'bg-indigo-300/10 border-l-6 border-[#4A5FFF] dark:bg-muted ' : 'ml-2'}`}
               >
                 {route.icon}
-                {!isCollapsed && <span className="hidden ml-2 md:block">{route.name}</span>}
-              </a>
+                {(!isCollapsed || isMobileScreen) && <span className="ml-3 text-start text-primary">{route.name}</span>}
+              </Link>
             </li>
           ))}
         </ul>

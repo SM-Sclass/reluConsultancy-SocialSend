@@ -7,23 +7,16 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { useFilters } from '@/hooks/useFilters';
+import { useStore } from '@tanstack/react-store';
+import { filterStore } from '@/store/filterStore';
 import FilterSidebar from './FilterSidebar';
 import Breadcrumb from '../../../components/BreadCrumb';
 import Listing from '@/components/ReactTable'
 import { fetchTargetByFilterId } from './Service/User.service';
 import { columns, Toast, SideTab } from './helper';
 
-const SocialSearch = ({ toast, handleCloseToast, showToast }) => {
-  const {
-    filters,
-    updateFilter,
-    filterId,
-    setFilterId,
-    applyFilters,
-    resetFilters,
-    loading
-  } = useFilters(showToast);
+const SocialSearch = ({ toast, handleCloseToast }) => {
+  const { filterId  } = useStore(filterStore);
   const { isPending, data } = useQuery({
     queryKey: ['filteredUserAccounts', filterId],
     queryFn: () => fetchTargetByFilterId(filterId),
@@ -43,8 +36,6 @@ const SocialSearch = ({ toast, handleCloseToast, showToast }) => {
   const handleCloseSideTab = () => {
     setIsSideTabOpen(false);
   };
-
-
 
   const table = useReactTable({
     data: data || [],
@@ -81,8 +72,8 @@ const SocialSearch = ({ toast, handleCloseToast, showToast }) => {
       <Breadcrumb
         onClickFunction={handleBreadcrumbClick}
         pageName="Social Search"
-        availableEntries=""
         table={table}
+        availableEntries={data?.length || '0'}
         columns={columns}
         buttonName="Saved Filters"
       />
@@ -90,18 +81,12 @@ const SocialSearch = ({ toast, handleCloseToast, showToast }) => {
         isOpen={isSideTabOpen}
         onClose={handleCloseSideTab}
         filterId={filterId}
-        setFilterId={setFilterId}
         table={table}
       />
 
       <div className="flex flex-col sm:flex-row rounded h-full overflow-hidden">
         <FilterSidebar
-        table={table}
-          filters={filters}
-          updateFilter={updateFilter}
-          resetFilters={resetFilters}
-          loading={loading}
-          applyFilters={applyFilters}
+          table={table}
         />
         <div className="flex-1 flex-col h-full overflow-y-auto">
           <Listing
