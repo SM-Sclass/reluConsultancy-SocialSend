@@ -114,7 +114,7 @@ const Listing = ({
           Select All Rows
         </Button>
       </div>
-      <div className="relative overflow-x-auto shadow-sm rounded-lg border border-secondary">
+      <div className="relative overflow-x-auto rounded-sm border border-secondary">
         <div className="overflow-hidden">
           {isPending ? (
             <div className="space-y-1 bg-secondary rounded-lg p-4">
@@ -129,12 +129,12 @@ const Listing = ({
             </div>
           ) : (
             <Table>
-              <TableHeader className="dark:bg-secondary">
+              <TableHeader className="bg-secondary">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
-                        <TableHead key={header.id} className={header.id === 'select' ? 'text-center text-primary' : ''}>
+                        <TableHead key={header.id} className={header.id === 'select' ? 'text-center text-primary' : 'font-bold text-primary'}>
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -225,7 +225,7 @@ const Listing = ({
           </div>
         </div>
       )}
-      <div className='w-full flex '>
+      <div className='w-full flex mb-4 sm:mb-0 justify-end'>
         <Button
           variant="secondary"
           className="bg-blue-600 text-white cursor-pointer rounded-md hover:bg-blue-700 transition-colors"
@@ -235,7 +235,6 @@ const Listing = ({
           Export CSV <PlusIcon className="w-5 h-5 ml-1" />
         </Button>
       </div>
-
     </div>
   );
 };

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { X, Loader2 } from "lucide-react";
 import {
   BarChart,
@@ -10,30 +10,12 @@ import {
   ResponsiveContainer,
   CartesianGrid
 } from "recharts";
+import SocialAccountSetting from "@/components/SocialAccountSetting";
 import { userArray } from "../../../Data/Users";
-import { fetchSocialAccountStatistics, sendTemplateMessage, getTemplateMessage } from "./Service/SocialAccount.service";
-import { Toast } from "../Social-Search/helper";
+import { fetchSocialAccountStatistics, getTemplateMessage } from "./Service/SocialAccount.service";
+
 
 const UserSettingsModal = ({ username, isOpen, onClose }) => {
-  const [toast, setToast] = useState(null);
-  const user_id = "67b878d7ee1dfdb84e89c55f";
-  const { isPending, data } = useQuery({
-    queryKey: ['TemplateMessage',user_id],
-    queryFn: () => getTemplateMessage(user_id),
-  })
-
-  const sideRef = useRef(null)
-
-  const showToast = (message, type) => {
-    setToast({ message, type });
-    setTimeout(() => {
-      setToast(null);
-    }, 3000);
-  };
-
-  const handleCloseToast = () => {
-    setToast(null);
-  };
   const [activeTab, setActiveTab] = useState("Warmup");
   const [isAnimating, setIsAnimating] = useState(false);
   const isGlowDoggies = username === "glow.doggies";
@@ -72,7 +54,7 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
     },
     Settings: {
       id: "Settings",
-      content: () => <SettingsContent username={username} onClose={onClose} showToast={showToast} templateData={data.latest_template} isLoading={isPending} />,
+      content: () => <SocialAccountSetting onClose={onClose} />,
     },
     Statistics: {
       id: "Statistics",
@@ -110,13 +92,6 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/20 dark:bg-white/10">
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={handleCloseToast}
-        />
-      )}
       <div
         className={`absolute inset-0 duration-300 ${isOpen ? "" : "bg-opacity-0 pointer-events-none"
           }`}
@@ -141,7 +116,7 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
           ))}
         </div>
 
-        <div className="p-6 h-[calc(100vh-200px)] overflow-y-auto">
+        <div className="p-6  overflow-y-auto">
           {renderContent()}
         </div>
 
@@ -212,7 +187,7 @@ const WarmupContent = ({ username, CustomTooltip }) => {
     return color;
   };
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 h-[calc(100vh-180px)]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">Started on Dec 06, 2024</span>
@@ -257,6 +232,7 @@ const WarmupContent = ({ username, CustomTooltip }) => {
           )}
         </div>
       )}
+      
 
       {isGlowDoggies && (
         <>
@@ -308,204 +284,6 @@ const WarmupContent = ({ username, CustomTooltip }) => {
   );
 };
 
-const SettingsContent = ({ onClose, showToast, templateData, isLoading }) => {
-  const queryClient = useQueryClient();
-  const [formData, setFormData] = useState({
-    first_name: templateData.first_name || '',
-    last_name: templateData.last_name || '',
-    message: templateData?.campaign_message || '',
-    follow_limit: templateData?.daily_connections || 0,
-    like_limit: templateData.daily_likes || 0,
-    dm_limit: templateData.daily_messages || 0,
-    social_account_id: "67b878d7ee1dfdb84e89c55f",
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSave = async () => {
-    try {
-      formData.follow_limit = Number(formData.follow_limit);
-      formData.like_limit = Number(formData.like_limit);
-      formData.dm_limit = Number(formData.dm_limit);
-      await sendTemplateMessage(formData)
-      showToast('Template saved successfully', 'success');
-      await queryClient.invalidateQueries({
-        queryKey: ['TemplateMessage']
-      });
-    } catch (error) {
-      showToast(error.response.data.result, 'error')
-    }
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        <h3 className="text-sm font-medium text-primary">Sender Name</h3>
-        <div >
-
-          {isLoading ? (
-            <div className="space-y-4">
-              <Skeleton className="h-10 w-full rounded" />
-              <Skeleton className="h-10 w-full rounded" />
-            </div>
-          ) : (
-            <div className="flex flex-col sm:flex-row gap-4">
-              <input
-                type="text"
-                name="first_name"
-                placeholder="First Name"
-                className="flex-1 p-2 border rounded border-primary"
-                defaultValue={formData.first_name}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="last_name"
-                placeholder="Last Name"
-                className="flex-1 p-2 border rounded border-primary"
-                defaultValue={formData.last_name}
-                onChange={handleInputChange}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="">
-        <h3 className="text-sm font-medium text-primary">
-          Sender Message & Signature
-        </h3>
-        <div className="border rounded-lg">
-          <div className="flex gap-2 p-2 border-b">
-            {isLoading ? (
-              <>
-                <Skeleton className="h-8 w-8 rounded" />
-                <Skeleton className="h-8 w-8 rounded" />
-                <Skeleton className="h-8 w-8 rounded" />
-              </>
-            ) : (
-              <>
-                <button className="p-1 hover:bg-secondary rounded">
-                  <span className="font-bold">B</span>
-                </button>
-                <button className="p-1 hover:bg-secondary rounded">
-                  <span className="italic">I</span>
-                </button>
-                <button className="p-1 hover:bg-secondary rounded">
-                  <span className="underline">U</span>
-                </button>
-              </>
-            )}
-
-          </div>
-          {isLoading ? (
-            <>
-              <Skeleton className="h-28 w-full rounded" />
-            </>
-          ) : (
-            <>
-              <textarea
-                name="message"
-                className="w-full p-2 min-h-[100px] resize-none border border-primary"
-                defaultValue={formData.message}
-                onChange={handleInputChange}
-              />
-            </>
-          )}
-
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <h3 className="text-sm font-medium text-primary">Campaign Settings</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm text-primary mb-1">
-              Daily Friend Request Limit
-            </label>
-            {isLoading ? (
-              <>
-                <Skeleton className="h-10 w-full rounded mb-1" />
-              </>
-            ) : (
-              <>
-                <input
-                  type="number"
-                  name="follow_limit"
-                  defaultValue={formData.follow_limit}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded border-primary"
-                />
-              </>
-            )}
-            <span className="text-xs text-primary">Recommended Limit is 30</span>
-          </div>
-          <div>
-            <label className="block text-sm text-primary mb-1">
-              Daily Like/Post Limit
-            </label>
-            {isLoading ? (
-              <>
-                <Skeleton className="h-10 w-full rounded mb-1" />
-              </>
-            ) : (
-              <>
-                <input
-                  type="number"
-                  name="like_limit"
-                  defaultValue={formData.like_limit}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded border-primary"
-                />
-              </>
-            )}
-            <span className="text-xs text-primary">Recommended Limit is 30</span>
-          </div>
-          <div>
-            <label className="block text-sm text-primary mb-1">
-              Daily Direct Message Limit
-            </label>
-            {isLoading ? (
-              <>
-                <Skeleton className="h-10 w-full rounded mb-1" />
-              </>
-            ) : (
-              <>
-                <input
-                  type="number"
-                  name="dm_limit"
-                  defaultValue={formData.dm_limit}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded border-primary"
-                />
-              </>
-            )}
-            <span className="text-xs text-primary">Recommended Limit is 30</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="absolute bottom-0 left-0 right-0 flex justify-end gap-2 p-4 border-t bg-secondary">
-        <button
-          onClick={onClose}
-          className="px-4 py-2 text-primary hover:bg-gray-100 rounded"
-        >
-          DISCARD
-        </button>
-        <button className="px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded" onClick={handleSave}>
-          Save Changes
-        </button>
-      </div>
-    </div>
-
-  );
-};
 
 const StatisticsContent = ({ isGlowDoggies, CustomTooltip }) => {
   const { isPending, error, data } = useQuery({
@@ -581,7 +359,7 @@ const StatisticsContent = ({ isGlowDoggies, CustomTooltip }) => {
     };
 
     return (
-      <div className="h-64 mb-8">
+      <div className="h-64 mb-8 flex flex-col items-center">
         <h3 className="text-sm font-medium mb-4">{title}</h3>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
@@ -612,7 +390,7 @@ const StatisticsContent = ({ isGlowDoggies, CustomTooltip }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 h-[calc(100vh-180px)]">
       <StatChart
         data={data.dmSent}
         title="Direct Messages Sent"
@@ -641,5 +419,205 @@ const StatisticsContent = ({ isGlowDoggies, CustomTooltip }) => {
     </div>
   );
 };
+
+// const SettingsContent = ({ onClose, showToast, templateData, isLoading }) => {
+//   const queryClient = useQueryClient();
+//   const [formData, setFormData] = useState({
+//     first_name: templateData.first_name || '',
+//     last_name: templateData.last_name || '',
+//     message: templateData?.campaign_message || '',
+//     follow_limit: templateData?.daily_connections || 0,
+//     like_limit: templateData.daily_likes || 0,
+//     dm_limit: templateData.daily_messages || 0,
+//     social_account_id: "67b878d7ee1dfdb84e89c55f",
+//   });
+
+//   const handleInputChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData(prev => ({
+//       ...prev,
+//       [name]: value
+//     }));
+//   };
+
+//   const handleSave = async () => {
+//     try {
+//       formData.follow_limit = Number(formData.follow_limit);
+//       formData.like_limit = Number(formData.like_limit);
+//       formData.dm_limit = Number(formData.dm_limit);
+//       await sendTemplateMessage(formData)
+//       showToast('Template saved successfully', 'success');
+//       await queryClient.invalidateQueries({
+//         queryKey: ['TemplateMessage']
+//       });
+//     } catch (error) {
+//       showToast(error.response.data.result, 'error')
+//     }
+//   };
+
+//   return (
+//     <div className="space-y-6">
+//       <div className="space-y-4">
+//         <h3 className="text-sm font-medium text-primary">Sender Name</h3>
+//         <div >
+
+//           {isLoading ? (
+//             <div className="space-y-4">
+//               <Skeleton className="h-10 w-full rounded" />
+//               <Skeleton className="h-10 w-full rounded" />
+//             </div>
+//           ) : (
+//             <div className="flex flex-col sm:flex-row gap-4">
+//               <input
+//                 type="text"
+//                 name="first_name"
+//                 placeholder="First Name"
+//                 className="flex-1 p-2 border rounded border-primary"
+//                 defaultValue={formData.first_name}
+//                 onChange={handleInputChange}
+//               />
+//               <input
+//                 type="text"
+//                 name="last_name"
+//                 placeholder="Last Name"
+//                 className="flex-1 p-2 border rounded border-primary"
+//                 defaultValue={formData.last_name}
+//                 onChange={handleInputChange}
+//               />
+//             </div>
+//           )}
+//         </div>
+//       </div>
+
+//       <div className="">
+//         <h3 className="text-sm font-medium text-primary">
+//           Sender Message & Signature
+//         </h3>
+//         <div className="border rounded-lg">
+//           <div className="flex gap-2 p-2 border-b">
+//             {isLoading ? (
+//               <>
+//                 <Skeleton className="h-8 w-8 rounded" />
+//                 <Skeleton className="h-8 w-8 rounded" />
+//                 <Skeleton className="h-8 w-8 rounded" />
+//               </>
+//             ) : (
+//               <>
+//                 <button className="p-1 hover:bg-secondary rounded">
+//                   <span className="font-bold">B</span>
+//                 </button>
+//                 <button className="p-1 hover:bg-secondary rounded">
+//                   <span className="italic">I</span>
+//                 </button>
+//                 <button className="p-1 hover:bg-secondary rounded">
+//                   <span className="underline">U</span>
+//                 </button>
+//               </>
+//             )}
+
+//           </div>
+//           {isLoading ? (
+//             <>
+//               <Skeleton className="h-28 w-full rounded" />
+//             </>
+//           ) : (
+//             <>
+//               <textarea
+//                 name="message"
+//                 className="w-full p-2 min-h-[100px] resize-none border border-primary"
+//                 defaultValue={formData.message}
+//                 onChange={handleInputChange}
+//               />
+//             </>
+//           )}
+
+//         </div>
+//       </div>
+
+//       <div className="space-y-4">
+//         <h3 className="text-sm font-medium text-primary">Campaign Settings</h3>
+//         <div className="grid grid-cols-2 gap-4">
+//           <div>
+//             <label className="block text-sm text-primary mb-1">
+//               Daily Friend Request Limit
+//             </label>
+//             {isLoading ? (
+//               <>
+//                 <Skeleton className="h-10 w-full rounded mb-1" />
+//               </>
+//             ) : (
+//               <>
+//                 <input
+//                   type="number"
+//                   name="follow_limit"
+//                   defaultValue={formData.follow_limit}
+//                   onChange={handleInputChange}
+//                   className="w-full p-2 border rounded border-primary"
+//                 />
+//               </>
+//             )}
+//             <span className="text-xs text-primary">Recommended Limit is 30</span>
+//           </div>
+//           <div>
+//             <label className="block text-sm text-primary mb-1">
+//               Daily Like/Post Limit
+//             </label>
+//             {isLoading ? (
+//               <>
+//                 <Skeleton className="h-10 w-full rounded mb-1" />
+//               </>
+//             ) : (
+//               <>
+//                 <input
+//                   type="number"
+//                   name="like_limit"
+//                   defaultValue={formData.like_limit}
+//                   onChange={handleInputChange}
+//                   className="w-full p-2 border rounded border-primary"
+//                 />
+//               </>
+//             )}
+//             <span className="text-xs text-primary">Recommended Limit is 30</span>
+//           </div>
+//           <div>
+//             <label className="block text-sm text-primary mb-1">
+//               Daily Direct Message Limit
+//             </label>
+//             {isLoading ? (
+//               <>
+//                 <Skeleton className="h-10 w-full rounded mb-1" />
+//               </>
+//             ) : (
+//               <>
+//                 <input
+//                   type="number"
+//                   name="dm_limit"
+//                   defaultValue={formData.dm_limit}
+//                   onChange={handleInputChange}
+//                   className="w-full p-2 border rounded border-primary"
+//                 />
+//               </>
+//             )}
+//             <span className="text-xs text-primary">Recommended Limit is 30</span>
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="absolute bottom-0 left-0 right-0 flex justify-end gap-2 p-4 border-t bg-secondary">
+//         <button
+//           onClick={onClose}
+//           className="px-4 py-2 text-primary hover:bg-gray-100 rounded"
+//         >
+//           DISCARD
+//         </button>
+//         <button className="px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded" onClick={handleSave}>
+//           Save Changes
+//         </button>
+//       </div>
+//     </div>
+
+//   );
+// };
+
 
 export default UserSettingsModal;

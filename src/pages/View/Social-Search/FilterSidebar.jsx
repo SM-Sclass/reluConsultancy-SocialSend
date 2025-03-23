@@ -1,5 +1,6 @@
 import React from 'react';
 import * as z from 'zod'
+import toast from 'react-hot-toast'
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -69,7 +70,11 @@ const FilterSidebar = ({ table }) => {
   const onSubmit = async (data) => {
     try {
       data.user = "67dbcd214597acae7bdf3f6c",
-      filterMutation.mutate(data);
+      toast.promise(filterMutation.mutateAsync(data), {
+        loading: 'Saving filter...',
+        success: 'Filter saved successfully!',
+        error: 'An error occurred while saving filter'
+      })
       form.reset()
     } catch (error) {
       console.error(error)
@@ -82,16 +87,18 @@ const FilterSidebar = ({ table }) => {
     if (JSON.stringify(form.getValues()) === JSON.stringify(initialValues)) {
       table.resetRowSelection();
       setFilterId(null);
+      toast.success('Filters reset successfully!');
     }
     else{
       form.reset(initialValues);
+      toast.success('Form reset successfully!');
     }
 
     // Reset filter ID if the form is back to initial state
   };
 
   return (
-    <div className="w-full sm:w-64  sm:border-r  sm:border-gray-200 p-4 h-full overflow-y-auto">
+    <div className="w-full sm:w-72 sm:border-r sm:border-gray-200 pl-6 pr-5 py-4 h-full overflow-y-auto">
       <div className="space-y-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>

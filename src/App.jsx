@@ -1,12 +1,16 @@
+import { Toaster } from 'react-hot-toast'
 import './App.css'
 import AppRouter from './Routes/index'
 import { BrowserRouter } from 'react-router-dom'
 
 function App() {
   return (
-    <BrowserRouter>
-      <AppRouter />
-    </BrowserRouter>
+    <>
+      <Toaster position="top-center" />
+      <BrowserRouter>
+        <AppRouter />
+      </BrowserRouter>
+    </>
   )
 }
 

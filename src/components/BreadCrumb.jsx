@@ -4,9 +4,9 @@ import { Input } from "./ui/input";
 
 const Breadcrumb = ({ onClickFunction, pageName, table, availableEntries, buttonName }) => {
   return (
-    <div className="flex flex-col mb-4 py-2 px-3 sm:flex-row items-center justify-between bg-secondary shadow-sm rounded-md gap-4">
+    <div className="flex flex-col py-4 px-7 sm:flex-row items-center justify-between bg-background shadow-sm gap-4">
       <div className="flex items-center space-x-2 w-full sm:w-auto">
-        <h2 className="text-lg font-medium truncate">
+        <h2 className="text-lg font-bold truncate">
           {pageName} ({availableEntries})
         </h2>
       </div>

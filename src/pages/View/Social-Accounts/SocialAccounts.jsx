@@ -147,11 +147,15 @@ const SocialAccounts = () => {
         availableEntries={userArray?.length || '0'}
         table={table}
         buttonName="Add New" />
-      <Listing
-        columns={columns}
-        table={table}
-        isPending={false}
-      />
+      <div className="p-3 bg-zinc-100 dark:bg-black/20">
+
+        <Listing
+          columns={columns}
+          table={table}
+          isPending={false}
+          className='bg-background p-4 rounded-sm dark:border'
+        />
+      </div>
       {/* Show Popup */}
       {showPopUp && (
         <AddSocialAccountPopup onClose={() => setShowPopUp(false)} />

@@ -99,7 +99,7 @@ const LoginForm = () => {
           throw apiResponse.error;
         }
         const userData = {
-          user_id: apiResponse?.error?.response?.data?.user_id || '',
+          user_id: apiResponse?.error?.response?.data?.user_id || apiResponse?.response?.user_id || '',
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,

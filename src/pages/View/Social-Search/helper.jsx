@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Instagram } from 'lucide-react';
+import { Instagram, X } from 'lucide-react';
 import { useQueryClient, useQuery } from '@tanstack/react-query'
 import { setFilterId } from '@/store/filterStore';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -236,14 +236,14 @@ export const SideTab = ({ isOpen, onClose, filterId, table }) => {
   );
 
   return (
-    <div className='w-full'>
+    <div className={`fixed top-0 right-0 h-full w-full  flex shadow-lg transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
+      } z-40`}>
       <div
-        className={`fixed top-0 right-0 h-full w-full  flex shadow-lg transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
-          } z-40`}
-          >
+        className='w-full'
+      >
         <div
-        ref={sideRef}
-         className="flex flex-col self-end h-full w-4/5 sm:w-1/2 dark:bg-black/70 backdrop-blur-2xl ml-auto">
+          ref={sideRef}
+          className="flex flex-col self-end h-full w-4/5 sm:w-1/2 dark:bg-black/70 backdrop-blur-2xl ml-auto">
           {/* Header */}
           <div className="p-4 border-b flex items-center justify-between dark:bg-black/40">
             <h2 className="text-xl font-bold text-primary">Saved Filters</h2>
@@ -252,19 +252,9 @@ export const SideTab = ({ isOpen, onClose, filterId, table }) => {
               className="text-gray-500 hover:text-red-500 cursor-pointer"
               aria-label="Close"
             >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <X className="w-5 h-5" />
+
+
             </button>
           </div>
 

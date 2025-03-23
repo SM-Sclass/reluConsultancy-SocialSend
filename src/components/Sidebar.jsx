@@ -1,11 +1,11 @@
-import React ,{useEffect, useRef}from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useSidebar } from "../store/sidebarStore";
 import CampaignLogo from '../assets/CampaignSVG.svg';
 
 const routes = [
   {
-    name: 'Social accounts',
+    name: 'Social Accounts',
     path: '/Social-Accounts',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
@@ -39,11 +39,11 @@ const routes = [
   },
   {
     name: 'Campaigns',
-    path: '/campaigns',
+    path: '/Campaigns',
     icon: (
       <img src={CampaignLogo} alt="Campaigns" style={{
         filter: 'invert(25%) sepia(95%) saturate(500%) hue-rotate(250deg) brightness(90%) contrast(95%)'
-      }}/>
+      }} />
     )
   },
   // {
@@ -88,10 +88,10 @@ const Sidebar = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       // If the sidebar is open and the click is outside the sidebar's content
-      if (isOpen && 
-        isMobileScreen && 
-        sidebarRef.current && 
-        !sidebarRef.current.contains(event.target) && 
+      if (isOpen &&
+        isMobileScreen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target) &&
         event.target.closest('aside')) {
         closeSidebar();
       }
@@ -110,35 +110,34 @@ const Sidebar = () => {
 
   const handleRouteChange = (path) => {
     navigate(path);
-    if(isMobileScreen) {
+    if (isMobileScreen) {
       closeSidebar();
     }
   }
 
   return (
     <aside
-    className={` ${isMobileScreen ? 'w-full' : isCollapsed ? 'sm:w-20' : 'sm:w-[20vw]'} h-full transition-all duration-300 sm:max-w-64
+      className={` ${isMobileScreen ? 'w-full' : isCollapsed ? 'sm:w-20' : 'sm:w-[20vw]'} h-full transition-all duration-300 sm:max-w-64
       ${isOpen ? 'translate-x-0 shadow-lg sm:shadow-none' : '-translate-x-full'} sm:translate-x-0 sm:block fixed sm:relative
       left-0 z-40 
       `
-    }
-    aria-label="Sidebar"
+      }
+      aria-label="Sidebar"
     >
-      <div 
-      ref={sidebarRef}
-      className="h-full overflow-y-auto bg-[#FFF] bg-background max-w-64">
+      <div
+        ref={sidebarRef}
+        className="h-full overflow-y-auto bg-background max-w-64">
         <ul className="font-medium">
           {routes.map((route, index) => (
             <li key={index}>
               <Link
                 to={route.path}
                 onClick={() => handleRouteChange(route.path)}
-                className={`flex items-center justify-start p-3 sm:p-5
-                  text-gray-900  dark:text-white hover:bg-indigo-400/20 dark:hover:bg-gray-700 group 
-                  ${location.pathname === route.path ? 'bg-indigo-300/10 border-l-6 border-[#4A5FFF] dark:bg-muted ' : 'ml-2'}`}
+                className={`flex items-center justify-start p-3 sm:p-5 hover:bg-indigo-400/20 dark:hover:bg-gray-700 group 
+                  ${location.pathname === route.path ? 'bg-indigo-300/10 text-primary font-bold border-l-6 border-[#4A5FFF]' : 'ml-2 text-neutral-600 dark:text-neutral-400 hover:text-primary hover:dark:text-primary'}`}
               >
                 {route.icon}
-                {(!isCollapsed || isMobileScreen) && <span className="ml-3 text-start text-primary">{route.name}</span>}
+                {(!isCollapsed || isMobileScreen) && <span className="ml-3 text-start">{route.name}</span>}
               </Link>
             </li>
           ))}

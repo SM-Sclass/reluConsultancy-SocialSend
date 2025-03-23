@@ -15,8 +15,8 @@ import Listing from '@/components/ReactTable'
 import { fetchTargetByFilterId } from './Service/User.service';
 import { columns, Toast, SideTab } from './helper';
 
-const SocialSearch = ({ toast, handleCloseToast }) => {
-  const { filterId  } = useStore(filterStore);
+const SocialSearch = () => {
+  const { filterId } = useStore(filterStore);
   const { isPending, data } = useQuery({
     queryKey: ['filteredUserAccounts', filterId],
     queryFn: () => fetchTargetByFilterId(filterId),
@@ -61,14 +61,6 @@ const SocialSearch = ({ toast, handleCloseToast }) => {
 
   return (
     <div className="flex flex-col h-full">
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={handleCloseToast}
-        />
-      )}
-
       <Breadcrumb
         onClickFunction={handleBreadcrumbClick}
         pageName="Social Search"
@@ -84,17 +76,19 @@ const SocialSearch = ({ toast, handleCloseToast }) => {
         table={table}
       />
 
-      <div className="flex flex-col sm:flex-row rounded h-full overflow-hidden">
-        <FilterSidebar
-          table={table}
-        />
-        <div className="flex-1 flex-col h-full overflow-y-auto">
-          <Listing
-            columns={columns}
+      <div className="p-3 bg-zinc-100 dark:bg-black/20">
+        <div className="flex flex-col sm:flex-row rounded h-full overflow-hidden dark:border bg-background space-y-3 sm:space-y-0">
+          <FilterSidebar
             table={table}
-            isPending={isPending}
-            className="pl-0 sm:pl-4 "
           />
+          <div className="flex-1 flex-col h-full overflow-y-auto sm:py-4 px-4">
+            <Listing
+              columns={columns}
+              table={table}
+              isPending={isPending}
+              className=""
+            />
+          </div>
         </div>
       </div>
     </div>

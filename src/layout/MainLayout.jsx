@@ -24,7 +24,7 @@ const MainLayout = () => {
       <div className="flex w-full h-[calc(100vh-64px)] overflow-hidden">
         <div className="h-full"><Sidebar /></div>
         <div className="w-full h-full overflow-y-auto">
-          <main className="w-full p-4">
+          <main className="w-full">
             <Outlet />
           </main>
         </div>

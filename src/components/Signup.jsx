@@ -151,12 +151,12 @@ const SignupForm = () => {
         };
         
         const apiResponse = await signUpApi(body);
-        console.log(apiResponse);
-        if(apiResponse.error.status !== 400){
+        
+        if(apiResponse.error && apiResponse.error.status !== 400){
           throw apiResponse.error;
         } 
         const userData = {
-          user_id: apiResponse?.error?.response?.data?.user_id || '',
+          user_id: apiResponse?.error?.response?.data?.user_id || apiResponse?.response?.user_id || '',
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,

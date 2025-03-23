@@ -36,13 +36,7 @@ const AppRouter = () => {
         // {/* </ProtectedRoute> */}
       }>
         <Route path="Social-Accounts" element={<SocialAccounts />} />
-        <Route path="Social-Search" element={
-            <SocialSearch 
-            handleCloseToast={handleCloseToast} 
-            toast={toast} 
-            showToast={showToast}
-            />
-        } />
+        <Route path="Social-Search" element={<SocialSearch />} />
         <Route path="Campaigns" element={
           <CampaignProvider>
             <CampaignPage />
