@@ -60,7 +60,7 @@ export const columns = [
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => {
-      return <div className={`flex items-center px-2.5 py-1 rounded-lg ${row.status === 'Active'
+      return <div className={`flex items-center px-2.5 py-1 w-fit rounded-lg ${row.status === 'Active'
         ? 'bg-blue-700 text-blue-100'
         : 'bg-green-700 text-green-100'
         }`}>
