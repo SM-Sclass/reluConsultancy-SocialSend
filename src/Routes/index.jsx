@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 // import ProtectedRoute from './ProtectedRoute'
 import MainLayout from '../layout/MainLayout'
@@ -12,18 +12,6 @@ import SignupForm from '@/components/Signup'
 import FilterForm from '@/components/FilterForm'
 
 const AppRouter = () => {
-  const [toast, setToast] = useState(null);
-
-  const showToast = (message, type) => {
-    setToast({ message, type });
-    setTimeout(() => {
-      setToast(null);
-    }, 3000);
-  };
-
-  const handleCloseToast = () => {
-    setToast(null);
-  };
   return (
     <Routes>
       <Route path="/auth" element={<AuthLayout />}>
@@ -37,7 +25,7 @@ const AppRouter = () => {
       }>
         <Route path="Social-Accounts" element={<SocialAccounts />} />
         <Route path="Social-Search" element={<SocialSearch />} />
-        <Route path="Campaigns" element={
+        <Route path="Campaigns/*" element={
           <CampaignProvider>
             <CampaignPage />
           </CampaignProvider>

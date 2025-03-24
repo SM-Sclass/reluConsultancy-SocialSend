@@ -13,7 +13,7 @@ import FilterSidebar from './FilterSidebar';
 import Breadcrumb from '../../../components/BreadCrumb';
 import Listing from '@/components/ReactTable'
 import { fetchTargetByFilterId } from './Service/User.service';
-import { columns, Toast, SideTab } from './helper';
+import { columns, SideTab } from './helper';
 
 const SocialSearch = () => {
   const { filterId } = useStore(filterStore);
@@ -86,7 +86,6 @@ const SocialSearch = () => {
               columns={columns}
               table={table}
               isPending={isPending}
-              className=""
             />
           </div>
         </div>

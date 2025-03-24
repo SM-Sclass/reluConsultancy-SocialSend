@@ -157,25 +157,6 @@ export const columns = [
   }
 ]
 
-export const Toast = ({ message, type, onClose }) => {
-  const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
-
-  return (
-    <div className={`fixed top-4 right-4 flex items-center p-4 mb-4 ${bgColor} text-white rounded-lg shadow-md z-50`}>
-      <div className="mr-2 text-sm font-medium">{message}</div>
-      <button
-        type="button"
-        className="ml-auto -mx-1.5 -my-1.5 text-white hover:text-gray-200 rounded-lg p-1.5 inline-flex h-6 w-6"
-        onClick={onClose}
-      >
-        <span className="sr-only">Close</span>
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-    </div>
-  );
-};
 
 export const SideTab = ({ isOpen, onClose, filterId, table }) => {
   const queryClient = useQueryClient();

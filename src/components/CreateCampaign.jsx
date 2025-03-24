@@ -1,38 +1,22 @@
 import React, { useState,useContext } from 'react';
-import { CampaignContext } from './CampaignContext';
+import { ArrowLeft } from 'lucide-react';
 
-const CreateCampaign = () => {
-  const {setCampaignComponent, setCampaignData} = useContext(CampaignContext);
+const CreateCampaign = ({close}) => {
   const [campaignName, setCampaignName] = useState('Test Campaign');
 
   const handleNameChange = (e) => {
     setCampaignName(e.target.value);
   };
 
-  const handleCampaignContinue = () => {
-    setCampaignData(prev => [...prev, { name: campaignName }]);
-    setCampaignComponent("CampaignDetails");
-  }
 
   return (
     <div className="w-full max-w-full p-4">
       <div className="flex items-start mb-8">
         <button
           className="flex items-center text-blue-600 font-medium"
-          onClick={()=>setCampaignComponent("")}
+          onClick={close}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 mr-1"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <ArrowLeft className="w-5 h-5 mr-1" />
           Go Back
         </button>
       </div>
@@ -70,13 +54,13 @@ const CreateCampaign = () => {
       <div className="grid grid-cols-2 gap-4">
         <button
           className="py-3 px-4 border border-gray-300 rounded-md text-primary font-medium hover:bg-muted"
-          onClick={()=>setCampaignComponent("")}
+          onClick={close}
         >
           Cancel
         </button>
         <button
           className="py-3 px-4 bg-indigo-500 text-white rounded-md font-medium hover:bg-indigo-600"
-          onClick={handleCampaignContinue}
+          onClick={() => alert(`Campaign name: ${campaignName}`)}
         >
           Continue
         </button>

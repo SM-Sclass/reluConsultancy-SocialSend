@@ -101,7 +101,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
 
   const handlePlatformClick = (platformName) => {
     setSelectedPlatform(platformName);
-      setShowInstagramModal(true);
+    setShowInstagramModal(true);
 
   };
 
@@ -281,8 +281,8 @@ const AddSocialAccountPopup = ({ onClose }) => {
                   >
                     <div className="flex items-center justify-center border rounded-md hover:shadow-lg hover:dark:shadow-gray-500/20 cursor-pointer mb-3 p-5">
                       <img src={platform.icon} alt={platform.name}
-                      width="80"
-                      height="80"
+                        width="80"
+                        height="80"
                         className={`${platform?.name === "Twitter/X" ? "bg-white rounded-full" : ''} `}
                       />
                     </div>
@@ -300,7 +300,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
         {/* Render Modals */}
 
         {showInstagramModal && <InstagramCredentialsModal />}
-        {showCredentialsModal && <ManualCredentialsForm platform="Instagram" close={()=> setShowCredentialsModal(false)}/>}
+        {showCredentialsModal && <ManualCredentialsForm platform={selectedPlatform} close={() => setShowCredentialsModal(false)} />}
       </div>
     </div>
   );
