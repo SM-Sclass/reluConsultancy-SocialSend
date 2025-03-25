@@ -10,7 +10,7 @@ export default function CampaignPage() {
   return (
     <div>
       <Breadcrumb onClickFunction={() => setCreateCampaign(true)} pageName="Campaigns" availableEntries="54" buttonName="Add Campaign" />
-      <div className='p-3'>
+      <div className='p-3 flex justify-center'>
 
       <Routes>
         <Route path="/" element={<Campaigns createCampaign={createCampaign} close={() => setCreateCampaign(false)}/>} />

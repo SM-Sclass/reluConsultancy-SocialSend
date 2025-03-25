@@ -1,69 +1,118 @@
-import React, { useState,useContext } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import * as z from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { doc, getDoc } from 'firebase/firestore'
+import { auth, db } from '@/lib/firebase/config';
+import CampaignLogo from '../assets/campaign.svg';
+import { Input } from '@/components/ui/input';
+import { Form, FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { createCampaign } from '@/pages/View/Campaigns/Service/Campaign.service';
 
-const CreateCampaign = ({close}) => {
-  const [campaignName, setCampaignName] = useState('Test Campaign');
+const campaignSchema = z.object({
+  campaign_name: z.string().min(3, 'Enter at least 3 characters'),
+})
 
-  const handleNameChange = (e) => {
-    setCampaignName(e.target.value);
-  };
+const CreateCampaign = ({ close }) => {
+  const user = auth.currentUser
+  const navigate = useNavigate();
+  const form = useForm({
+    resolver: zodResolver(campaignSchema),
+    defaultValues: {
+      campaignName: '',
+    }
+  })
 
+  const newCampaignMutation = useMutation({
+    mutationFn:createCampaign,
+    onSuccess: (result) => {
+      navigate("/Campaigns/newCampaign")
+      close()
+    },
+    onError: (error) => {
+      console.error(error)
+    }
+  })
+
+  const onSubmit = async (data) => {
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userRef);
+      if(!userDoc.exists() && !userDoc?.data()?.user_id) {
+        toast.error('Authorization error. Please try again later.')
+        return;
+      }
+      data.user_id = userDoc.data().user_id
+      toast.promise(newCampaignMutation.mutateAsync(data), {
+        loading: 'Creating campaign...',
+        success: 'Campaign created successfully',
+        error: 'Failed to create campaign'
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
-    <div className="w-full max-w-full p-4">
+    <div className="w-full p-4">
       <div className="flex items-start mb-8">
-        <button
+        <Button
+        variant="ghost"
           className="flex items-center text-blue-600 font-medium"
           onClick={close}
         >
-          <ArrowLeft className="w-5 h-5 mr-1" />
+          <ArrowLeft className="w-5 h-5" />
           Go Back
-        </button>
+        </Button>
       </div>
-
-      <div className="text-center mb-8">
+      <div className="text-center">
         <div className="flex justify-center mb-4">
-          <div className="bg-indigo-100 p-3 rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-indigo-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
-              />
-            </svg>
-          </div>
+          <img src={CampaignLogo} alt="Campaigns" width={40} height={40} />
         </div>
-        <h1 className="text-3xl font-bold mb-2">Let's creat a new campaign!</h1>
-        <p className="text-gray-600">What would you like to name it?</p>
-      </div>
-
-      <input
-        type="text"
-        value={campaignName}
-        onChange={handleNameChange}
-        className="w-full border border-gray-300 rounded-md px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-      />
-
-      <div className="grid grid-cols-2 gap-4">
-        <button
-          className="py-3 px-4 border border-gray-300 rounded-md text-primary font-medium hover:bg-muted"
-          onClick={close}
-        >
-          Cancel
-        </button>
-        <button
-          className="py-3 px-4 bg-indigo-500 text-white rounded-md font-medium hover:bg-indigo-600"
-          onClick={() => alert(`Campaign name: ${campaignName}`)}
-        >
-          Continue
-        </button>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Let's create a new campaign!</h1>
+          <p className="text-gray-600 text-start">What would you like to name it?</p>
+        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="campaign_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Test Campaign"
+                      className="h-10"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-start" />
+                </FormItem>
+              )}
+            />
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <Button
+                variant="outline"
+                className="py-3 px-4 border h-10 border-gray-300 rounded-md text-primary font-medium hover:bg-muted"
+                onClick={close}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="py-3 px-4 h-10 bg-indigo-500 text-white rounded-md font-medium hover:bg-indigo-600"
+              >
+                Continue
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
     </div>
   );

@@ -9,7 +9,6 @@ import { CampaignProvider } from '@/pages/View/Campaigns/CampaignContext'
 import AuthLayout from '../layout/AuthLayout'
 import LoginForm from '@/components/Login'
 import SignupForm from '@/components/Signup'
-import FilterForm from '@/components/FilterForm'
 
 const AppRouter = () => {
   return (
@@ -30,7 +29,6 @@ const AppRouter = () => {
             <CampaignPage />
           </CampaignProvider>
         } />
-        <Route path="filterform" element={<FilterForm />} />
 
       </Route>
     </Routes>

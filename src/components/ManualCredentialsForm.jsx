@@ -49,6 +49,7 @@ export default function ManualCredentialsForm({ platform, close }) {
       const userDoc = await getDoc(userRef);
 
       if (!userDoc.exists() || !userDoc.data().user_id) {
+        toast.error('Authorization error. Please try again later.')
         return;
       }
       data.user_id = userDoc.data().user_id

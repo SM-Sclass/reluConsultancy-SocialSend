@@ -51,7 +51,7 @@ function Campaigns({ createCampaign, close }) {
     }
   })
   return (
-    <div className='p-4 border rounded-sm'>
+    <div className='p-4 border rounded-sm w-full'>
       {!createCampaign &&
         <Listing
           columns={columns}
