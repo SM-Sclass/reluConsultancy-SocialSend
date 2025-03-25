@@ -19,7 +19,7 @@ const credentialsSchema = z.object({
 
 export default function ManualCredentialsForm({ platform, close }) {
   const [showPassword, setShowPassword] = useState(false);
-  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);sender
   const user = auth.currentUser
   
   const form = useForm({
@@ -54,11 +54,11 @@ export default function ManualCredentialsForm({ platform, close }) {
       data.user_id = userDoc.data().user_id
 
       console.log(data)
-      toast.promise(socialAccountMutation.mutateAsync(data), {
-        loading: 'Adding social account...',
-        success: 'Social account added successfully!',
-        error: 'An error occurred while adding social account'
-      })
+      // toast.promise(socialAccountMutation.mutateAsync(data), {
+      //   loading: 'Adding social account...',
+      //   success: 'Social account added successfully!',
+      //   error: 'An error occurred while adding social account'
+      // })
     } catch (error) {
       console.error(error)
     }

@@ -12,9 +12,8 @@ import { Input } from "@/components/ui/input";
 
 const AddSocialAccountPopup = ({ onClose }) => {
   const [selectedPlatform, setSelectedPlatform] = useState("");
-  const [showInstagramModal, setShowInstagramModal] = useState(false);
   const [showCredentialsModal, setShowCredentialsModal] = useState(false);
-  const [credentialsSource, setCredentialsSource] = useState("");
+  const [credentialsSource, setCredentialsSource] = useState(false);
   const [csvData, setCsvData] = useState(null);
   const fileInputRef = useRef(null);
   const backgroundRef = useRef(null);
@@ -101,8 +100,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
 
   const handlePlatformClick = (platformName) => {
     setSelectedPlatform(platformName);
-    setShowInstagramModal(true);
-
+    setCredentialsSource(true);
   };
 
   const handleCsvCredentialsUse = () => {
@@ -130,10 +128,10 @@ const AddSocialAccountPopup = ({ onClose }) => {
         alertDiv.remove();
       }, 3000);
 
-      setShowInstagramModal(false);
+      setCredentialsSource(false);
     } else {
       alert("Please upload a CSV file first");
-      setShowInstagramModal(false);
+      setCredentialsSource(false);
     }
   };
 
@@ -149,7 +147,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
               handleCsvCredentialsUse();
             } else {
               alert("Please upload a CSV file first");
-              setShowInstagramModal(false);
+              setCredentialsSource(false);
             }
           }}
         >
@@ -159,8 +157,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
         <button
           className="w-full p-3 border rounded-lg hover:bg-muted"
           onClick={() => {
-            setCredentialsSource("manual");
-            setShowInstagramModal(false);
+            setCredentialsSource(false);
             setShowCredentialsModal(true);
           }}
         >
@@ -169,7 +166,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
       </div>
       <button
         className="mt-4 text-gray-500 hover:text-primary"
-        onClick={() => setShowInstagramModal(false)}
+        onClick={() => setShowCredentialSource(false)}
       >
         Cancel
       </button>
@@ -204,7 +201,7 @@ const AddSocialAccountPopup = ({ onClose }) => {
       <div
         ref={backgroundRef}
         className="w-fit">
-        {!showInstagramModal && !showCredentialsModal &&
+        {!credentialsSource && !showCredentialsModal &&
           (<div className="bg-background rounded-lg mx-auto w-9/10 sm:w-full max-w-xl">
             <div className="flex items-start justify-between px-6 py-4">
               <h2 className="text-lg font-bold">Add Social Account</h2>
@@ -299,8 +296,8 @@ const AddSocialAccountPopup = ({ onClose }) => {
 
         {/* Render Modals */}
 
-        {showInstagramModal && <InstagramCredentialsModal />}
-        {showCredentialsModal && <ManualCredentialsForm platform={selectedPlatform} close={() => setShowCredentialsModal(false)} />}
+        {credentialsSource && <InstagramCredentialsModal />}
+        {showCredentialsModal && <ManualCredentialsForm platform={selectedPlatform.toUpperCase()} close={() => setShowCredentialsModal(false)} />}
       </div>
     </div>
   );

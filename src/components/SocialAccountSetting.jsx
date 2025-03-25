@@ -9,6 +9,7 @@ import { Form, FormField, FormLabel, FormItem, FormControl, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from '@/components/ui/button';
+import { getTemplateMessage } from '@/pages/View/Social-Accounts/Service/SocialAccount.service';
 
 const templateMessageSchema = z.object({
   first_name: z.string().nonempty(),
@@ -19,14 +20,8 @@ const templateMessageSchema = z.object({
   dm_limit: z.number().default(0),
 })
 
-function SocialAccountSetting({ onClose }) {
+function SocialAccountSetting({ onClose, data, isPending }) {
   const queryClient = useQueryClient();
-  const user_id = "67b878d7ee1dfdb84e89c55f";
-  const { isPending, data } = useQuery({
-    queryKey: ['TemplateMessage', user_id],
-    queryFn: () => getTemplateMessage(user_id),
-    select: (data) => data.latest_template
-  })
 
   const form = useForm({
     resolver: zodResolver(templateMessageSchema),
@@ -43,9 +38,9 @@ function SocialAccountSetting({ onClose }) {
   const socialAccountSettingMutation = useMutation({
     mutationFn: sendTemplateMessage,
     onSuccess: (result) => {
-      setTimeout(() => {
-        console.log("result")
-      }, 3000)
+      // setTimeout(() => {
+      //   console.log("result")
+      // }, 3000)
       queryClient.invalidateQueries({ queryKey: ['TemplateMessage'] })
     },
     onError: (error) => {
@@ -56,7 +51,7 @@ function SocialAccountSetting({ onClose }) {
   const onSubmit = async (data) => {
     try {
       data.social_account_id = "67b878d7ee1dfdb84e89c55f"
-      console.log(data)
+      // console.log(data)
       toast.promise(socialAccountSettingMutation.mutateAsync(data), {
         loading: 'Updating Template setting...',
         success: 'Template Updated successfully!',
@@ -82,7 +77,7 @@ function SocialAccountSetting({ onClose }) {
                   <FormItem>
                     <FormControl>
                       <Input
-                        value={field.value}
+                        value={ field.value}
                         onChange={field.onChange}
                         placeholder="First Name"
                       />
@@ -118,7 +113,7 @@ function SocialAccountSetting({ onClose }) {
                 <FormControl>
                   <Textarea
                     rows={9}
-                    value={field.value}
+                    value={ field.value}
                     onChange={field.onChange}
                     placeholder="Type your message here..."
                   />

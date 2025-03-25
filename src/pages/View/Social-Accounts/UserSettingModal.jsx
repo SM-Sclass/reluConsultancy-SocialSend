@@ -14,11 +14,16 @@ import SocialAccountSetting from "@/components/SocialAccountSetting";
 import { userArray } from "../../../Data/Users";
 import { fetchSocialAccountStatistics, getTemplateMessage } from "./Service/SocialAccount.service";
 
-
 const UserSettingsModal = ({ username, isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState("Warmup");
   const [isAnimating, setIsAnimating] = useState(false);
   const isGlowDoggies = username === "glow.doggies";
+  const user_id = "67b878d7ee1dfdb84e89c55f";
+  const { isPending, data } = useQuery({
+    queryKey: ['TemplateMessage', user_id],
+    queryFn: () => getTemplateMessage(user_id),
+    select: (data) => data.latest_template
+  })
 
   useEffect(() => {
     if (isOpen) {
@@ -54,7 +59,7 @@ const UserSettingsModal = ({ username, isOpen, onClose }) => {
     },
     Settings: {
       id: "Settings",
-      content: () => <SocialAccountSetting onClose={onClose} />,
+      content: () => <SocialAccountSetting onClose={onClose} data={data} isPending={isPending}/>,
     },
     Statistics: {
       id: "Statistics",
