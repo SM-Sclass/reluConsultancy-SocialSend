@@ -10,18 +10,7 @@ import Listing from '@/components/ReactTable'
 import { columns } from './helper'
 import CreateCampaign from '@/components/CreateCampaign'
 
-function Campaigns({ createCampaign, close }) {
-  const [data, setData] = useState([{
-    "id": 1,
-    "name": "Campaign 1",
-    "status": "Active",
-    "progress": 80,
-    "sent": 100,
-    "click": 50,
-    "replied": 20,
-    "opportunity": 10
-  },
-  ])
+function Campaigns({ createCampaign, close, data }) {
 
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
   const [sorting, setSorting] = useState([])

@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { format } from "date-fns"
-import {cn } from '../../../lib/utils'
-import { Popover, PopoverTrigger, PopoverContent } from '../../../components/ui/popover'
-import { Button } from '../../../components/ui/button'
+import { cn } from '@/lib/utils'
+import { Popover, PopoverTrigger, PopoverContent } from './ui/popover'
+import { Button } from './ui/button'
 import { Calendar as CalendarIcon } from 'lucide-react'
-import { Calendar } from '../../../components/ui/calendar'
+import { Calendar } from './ui/calendar'
 
 function CampaignSchedule() {
   const [date, setDate] = useState(null);

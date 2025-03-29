@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { X, Info } from "lucide-react";
+import toast from "react-hot-toast";
 import ManualCredentialsForm from "@/components/ManualCredentialsForm";
 import { userArray } from "../../../Data/Users";
 import { defaultUserStructure } from "../../../Data/Users"
@@ -48,19 +49,48 @@ const AddSocialAccountPopup = ({ onClose }) => {
     document.body.removeChild(a);
   };
 
+  //function to parse CSV headers
+  const parseCSVHeaders = (content) => {
+    const lines = content.split("\n");
+    const headers = lines[0].split(",").map(header => header.trim());
+
+    // Define required headers
+    const requiredHeaders = ["platform", "username", "password"];
+    const missingHeaders = requiredHeaders.filter(header => !headers.includes(header));
+
+    if (missingHeaders.length > 0) {
+      throw new Error(`Missing required headers: ${missingHeaders.join(", ")}`);
+    }
+
+    return headers;
+  };
+
   // Function to parse CSV content
   const parseCSV = (content) => {
     const lines = content.split("\n");
-    const headers = lines[0].split(",");
+    let headers;
+
+    try {
+      headers = parseCSVHeaders(content); // Validate headers
+    } catch (error) {
+      toast.error(error.message) // Show error if headers are missing
+      fileInputRef.current.value = "";
+      return [];
+    }
+
+    const requiredHeaders = ["platform", "username", "password"];
     const data = [];
 
     for (let i = 1; i < lines.length; i++) {
       if (lines[i].trim() === "") continue;
       const values = lines[i].split(",");
+
       const entry = {};
-      headers.forEach((header, index) => {
-        entry[header.trim()] = values[index]?.trim();
+      requiredHeaders.forEach(header => {
+        const index = headers.indexOf(header);
+        entry[header] = values[index]?.trim() || ""; // Assign empty string if missing
       });
+
       data.push(entry);
     }
 
@@ -75,8 +105,10 @@ const AddSocialAccountPopup = ({ onClose }) => {
       reader.onload = (e) => {
         const text = e.target.result;
         const parsedData = parseCSV(text);
-        setCsvData(parsedData);
-        console.log("CSV Data loaded:", parsedData);
+        if (parsedData.length > 0) {
+          setCsvData(parsedData);
+          console.log("CSV Data loaded:", parsedData);
+        }
       };
       reader.readAsText(file);
     }
@@ -91,8 +123,10 @@ const AddSocialAccountPopup = ({ onClose }) => {
       reader.onload = (e) => {
         const text = e.target.result;
         const parsedData = parseCSV(text);
-        setCsvData(parsedData);
-        console.log("CSV Data loaded:", parsedData);
+        if (parsedData.length > 0) {
+          setCsvData(parsedData);
+          console.log("CSV Data loaded:", parsedData);
+        }
       };
       reader.readAsText(file);
     }
@@ -238,7 +272,10 @@ const AddSocialAccountPopup = ({ onClose }) => {
                       {csvData.length} accounts loaded
                     </p>
                     <button
-                      onClick={() => setCsvData(null)}
+                      onClick={() => {
+                        setCsvData(null)
+                        fileInputRef.current.value = "";
+                      }}
                       className="mt-2 text-red-500 text-sm hover:underline"
                     >
                       Remove CSV

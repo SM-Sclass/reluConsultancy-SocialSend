@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { Checkbox } from '@/components/ui/checkbox';
 
 const ProgressBar = ({ progress }) => {
@@ -51,9 +52,15 @@ export const columns = [
     accessorKey: 'name',
     header: 'Name',
     cell: ({ row }) => {
-      return <div className="flex items-center gap-2">
-        {row.getValue('name')}
-      </div>
+      const navigate = useNavigate(); // Use navigate hook
+      return (
+        <div
+          className="flex items-center gap-2 cursor-pointer text-blue-500 hover:underline"
+          onClick={() => navigate(`/Campaigns/${row.original.id}`)} // Navigate to dynamic route
+        >
+          {row.getValue('name')}
+        </div>
+      );
     }
   },
   {
@@ -62,7 +69,7 @@ export const columns = [
     cell: ({ row }) => {
       return <div className={`flex items-center px-2.5 py-1 w-fit rounded-lg ${row.status === 'Active'
         ? 'bg-blue-700 text-blue-100'
-        : 'bg-green-700 text-green-100'
+        : 'bg-green-600 text-green-100'
         }`}>
         {row.getValue('status')}
       </div>

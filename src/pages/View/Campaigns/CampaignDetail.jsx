@@ -1,14 +1,12 @@
-import React, { useState,useContext } from 'react';
-import { CampaignContext } from './CampaignContext';
-import CampaignAnalytic from './CampaignAnalytic';
-import CampaignLeads from './CampaignLeads';
-import CampaignSequence from './CampaignSequence';
-import CampaignSchedule from './CampaignSchedule';
-import CampaignOptions from './CampaignOptions';
+import React, { useState } from 'react';
+import CampaignAnalytic from '../../../components/CampaignAnalytic';
+import CampaignLeads from '../../../components/CampaignLeads';
+import CampaignSequence from '../../../components/CampaignSequence';
+import CampaignSchedule from '../../../components/CampaignSchedule';
+import CampaignOptions from '../../../components/CampaignOptions';
 import { Button } from '@/components/ui/button';
 
 const CampaignDetail = () => {
-    const {setCampaignComponent} = useContext(CampaignContext)
   const [activeTab, setActiveTab] = useState('leads');
   const tabs = [
     { id: 'analytics', label: 'Analytics' },
@@ -37,26 +35,6 @@ const CampaignDetail = () => {
   
   return (
     <div className="w-full p-2 rounded-lg shadow-sm border border-secondary">
-      <div className="flex items-start mb-8">
-        <button
-          className="flex items-center text-blue-600 font-medium"
-          onClick={()=>setCampaignComponent("")}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 mr-1"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Go Back
-        </button>
-      </div>
       <div className="w-full">
         <nav className="flex w-full overflow-x-auto">
           {tabs.map(tab => (

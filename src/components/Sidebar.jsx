@@ -99,7 +99,7 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={` ${isMobileScreen ? 'w-full' : isCollapsed ? 'sm:w-20' : 'sm:w-[20vw]'} h-full transition-all duration-300 sm:max-w-64
+      className={` ${isMobileScreen ? 'w-full' : isCollapsed ? 'sm:w-19' : 'sm:w-[20vw]'} h-full transition-all duration-300 sm:max-w-64
       ${isOpen ? 'translate-x-0 shadow-lg sm:shadow-none' : '-translate-x-full'} sm:translate-x-0 sm:block fixed sm:relative
       left-0 z-40 
       `
