@@ -6,17 +6,19 @@ import CampaignSequence from './CampaignSequence';
 import CampaignSchedule from './CampaignSchedule';
 import CampaignOptions from './CampaignOptions';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router';
 
 const CampaignDetail = () => {
     const {setCampaignComponent} = useContext(CampaignContext)
   const [activeTab, setActiveTab] = useState('leads');
-  const tabs = [
-    { id: 'analytics', label: 'Analytics' },
-    { id: 'leads', label: 'Leads' },
-    { id: 'sequences', label: 'Sequences' },
-    { id: 'schedule', label: 'Schedule' },
-    { id: 'options', label: 'Options' }
-  ];
+  const navigate = useNavigate();
+  // const tabs = [
+  //   { id: 'analytics', label: 'Analytics' },
+  //   { id: 'leads', label: 'Leads' },
+  //   { id: 'sequences', label: 'Sequences' },
+  //   { id: 'schedule', label: 'Schedule' },
+  //   { id: 'options', label: 'Options' }
+  // ];
   
   const renderTabContent = () => {
     switch(activeTab) {
@@ -40,7 +42,8 @@ const CampaignDetail = () => {
       <div className="flex items-start mb-8">
         <button
           className="flex items-center text-blue-600 font-medium"
-          onClick={()=>setCampaignComponent("")}
+          // onClick={()=>setCampaignComponent("analytics")}
+          onClick={()=> navigate("/Campaigns")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +61,7 @@ const CampaignDetail = () => {
         </button>
       </div>
       <div className="w-full">
-        <nav className="flex w-full overflow-x-auto">
+        {/* <nav className="flex w-full overflow-x-auto">
           {tabs.map(tab => (
             <Button
               key={tab.id}
@@ -73,7 +76,7 @@ const CampaignDetail = () => {
               {tab.label}
             </Button>
           ))}
-        </nav>
+        </nav> */}
       </div>
       <div className="p-4">
         {renderTabContent()}

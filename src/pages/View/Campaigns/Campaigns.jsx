@@ -1,33 +1,49 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from "react";
 import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable
-} from '@tanstack/react-table'
-import Listing from '@/components/ReactTable'
-import { columns } from './helper'
-import CreateCampaign from '@/components/CreateCampaign'
+  useReactTable,
+} from "@tanstack/react-table";
+import Listing from "@/components/ReactTable";
+import { columns } from "./helper";
+import CreateCampaign from "@/components/CreateCampaign";
+import { api } from "@/Services/Api";
+import { auth } from "@/lib/firebase/config";
 
 function Campaigns({ createCampaign, close }) {
-  const [data, setData] = useState([{
-    "id": 1,
-    "name": "Campaign 1",
-    "status": "Active",
-    "progress": 80,
-    "sent": 100,
-    "click": 50,
-    "replied": 20,
-    "opportunity": 10
-  },
-  ])
+  const [data, setData] = useState([
+    {
+      id: 1,
+      name: "Campaign 1",
+      status: "Active",
+      progress: 80,
+      sent: 100,
+      click: 50,
+      replied: 20,
+      opportunity: 10,
+    },
+  ]);
 
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
-  const [sorting, setSorting] = useState([])
-  const [columnFilters, setColumnFilters] = useState([])
-  const [columnVisibility, setColumnVisibility] = useState({})
-  const [rowSelection, setRowSelection] = useState({})
+  const getCampaigns = async () => {
+    const user = auth.currentUser;
+
+    try {
+    console.log(user.providerData[0].uid)
+    const response = await api.get(`/api/get_campaigns/67dbcd214597acae7bdf3f6c`);
+    setData(response.data.campaigns)
+    // console.log(response);
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [sorting, setSorting] = useState([]);
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [columnVisibility, setColumnVisibility] = useState({});
+  const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data: data || [],
@@ -47,20 +63,22 @@ function Campaigns({ createCampaign, close }) {
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination
-    }
-  })
+      pagination,
+    },
+  });
+
+  useEffect(() => {
+    getCampaigns();
+  }, []);
+
   return (
-    <div className='p-4 border rounded-sm w-full'>
-      {!createCampaign &&
-        <Listing
-          columns={columns}
-          table={table}
-          isPending={false}
-        />}
+     <div className="p-4 border rounded-sm w-full"> 
+      {!createCampaign && (
+        <Listing columns={columns} table={table} isPending={false} />
+      )}
       {createCampaign && <CreateCampaign close={close} />}
     </div>
-  )
+  );
 }
 
-export default Campaigns
+export default Campaigns;

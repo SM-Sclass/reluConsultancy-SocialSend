@@ -1,33 +1,36 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable
-} from '@tanstack/react-table'
-import { useStore } from '@tanstack/react-store';
-import { filterStore } from '@/store/filterStore';
-import FilterSidebar from './FilterSidebar';
-import Breadcrumb from '../../../components/BreadCrumb';
-import Listing from '@/components/ReactTable'
-import { fetchTargetByFilterId } from './Service/User.service';
-import { columns, SideTab } from './helper';
+  useReactTable,
+} from "@tanstack/react-table";
+import { useStore } from "@tanstack/react-store";
+import { filterStore } from "@/store/filterStore";
+import FilterSidebar from "./FilterSidebar";
+import Breadcrumb from "../../../components/BreadCrumb";
+import Listing from "@/components/ReactTable";
+import { fetchTargetByFilterId } from "./Service/User.service";
+import { columns, SideTab } from "./helper";
+import SocialSearchImage from "../../../assets/SocialSearchImage.svg";
+import { SideTabApplyFilter } from "@/components/input/ApplyFilter";
 
 const SocialSearch = () => {
   const { filterId } = useStore(filterStore);
   const { isPending, data } = useQuery({
-    queryKey: ['filteredUserAccounts', filterId],
+    queryKey: ["filteredUserAccounts", filterId],
     queryFn: () => fetchTargetByFilterId(filterId),
     // refetchInterval: filterId? 10000 : false,
-  })
+  });
 
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
-  const [sorting, setSorting] = useState([])
-  const [columnFilters, setColumnFilters] = useState([])
-  const [columnVisibility, setColumnVisibility] = useState({})
-  const [rowSelection, setRowSelection] = useState({})
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [sorting, setSorting] = useState([]);
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [columnVisibility, setColumnVisibility] = useState({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [openNewFilter, setOpenNewFilter] = useState(false);
 
   const [isSideTabOpen, setIsSideTabOpen] = useState(false);
   const handleBreadcrumbClick = () => {
@@ -55,9 +58,9 @@ const SocialSearch = () => {
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination
-    }
-  })
+      pagination,
+    },
+  });
 
   return (
     <div className="flex flex-col h-full">
@@ -65,7 +68,7 @@ const SocialSearch = () => {
         onClickFunction={handleBreadcrumbClick}
         pageName="Social Search"
         table={table}
-        availableEntries={data?.length || '0'}
+        availableEntries={data?.length || "0"}
         columns={columns}
         buttonName="Saved Filters"
       />
@@ -77,16 +80,61 @@ const SocialSearch = () => {
       />
 
       <div className="p-3 bg-zinc-100 dark:bg-black/20">
-        <div className="flex flex-col sm:flex-row rounded h-full overflow-hidden dark:border bg-background space-y-3 sm:space-y-0">
-          <FilterSidebar
-            table={table}
+        <div
+          className={`flex justify-center items-center flex-col ${
+            openNewFilter ? "hidden" : ""
+          }`}
+        >
+          <img
+            src={SocialSearchImage}
+            className="h-[200px] w-[300px] bg-cover"
+            alt=""
           />
-          <div className="flex-1 flex-col h-full overflow-y-auto sm:py-4 px-4">
-            <Listing
-              columns={columns}
+          <div
+            className=" bg-gray-50 hover:bg-gray-500 px-5 py-2 rounded-2xl cursor-pointer"
+            onClick={() => setOpenNewFilter(true)}
+          >
+            Create New Filter
+          </div>
+          <p className="font-normal text-sm my-2 pb-5 border-gray-50 border-b-[1px]">
+            Start your search by applying filters or directly type your query
+            below. You can also use presets.
+          </p>
+          <div className="my-5 grid grid-cols-2 w-full px-10">
+            <SideTabApplyFilter
+              isOpen={isSideTabOpen}
+              onClose={handleCloseSideTab}
+              filterId={filterId}
               table={table}
-              isPending={isPending}
+              setOpenNewFilter={setOpenNewFilter}
             />
+            {/* <div className="flex flex-col justify-start  ">
+              <div className="flex justify-between font-medium text-lg border-b-[1px] border-gray-400">
+                <p className="">Saved Filters</p>
+                <p className="">icon</p>
+              </div>
+              <div className="max-h-[200px] overflow-y-auto">
+              {data &&
+                data.length > 0 &&
+                data.slice(0,100).map((item, index) => {
+                  return <div className="flex justify-start py-3 border-gray-200 border-b-[1px] hover:bg-gray-300 px-2 cursor-pointer ">{item.username}</div>;
+                })}
+                </div>
+              <div className=""></div>
+            </div> */}
+            <div className=""></div>
+          </div>
+        </div>
+
+        {/* --------------------- */}
+        <div
+          className={`flex flex-col sm:flex-row rounded h-full overflow-hidden dark:border bg-background space-y-3 sm:space-y-0 ${
+            openNewFilter ? "" : "hidden"
+          }`}
+        >
+          <FilterSidebar table={table} />
+          <div className="flex-1 flex-col h-full overflow-y-auto sm:py-4 px-4">
+            <Listing columns={columns} table={table} isPending={isPending} />
           </div>
         </div>
       </div>

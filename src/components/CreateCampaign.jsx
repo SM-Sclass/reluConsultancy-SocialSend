@@ -39,16 +39,23 @@ const CreateCampaign = ({ close }) => {
     }
   })
 
+
+  console.log(user)
+
   const onSubmit = async (data) => {
     try {
       const userRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userRef);
-      if(!userDoc.exists() && !userDoc?.data()?.user_id) {
-        toast.error('Authorization error. Please try again later.')
-        return;
-      }
-      data.user_id = userDoc.data().user_id
-      toast.promise(newCampaignMutation.mutateAsync(data), {
+      // const userDoc = await getDoc(userRef);
+      // if(!userDoc.exists() && !userDoc?.data()?.user_id) {
+      //   toast.error('Authorization error. Please try again later.')
+      //   return;
+      // }
+      // data.user_id = userDoc.data().user_id
+      toast.promise(newCampaignMutation.mutateAsync({
+        // user_id: user.uid,
+        user_id: "67dbcd214597acae7bdf3f6c",
+        campaign_name: data.campaign_name
+      }), {
         loading: 'Creating campaign...',
         success: 'Campaign created successfully',
         error: 'Failed to create campaign'
@@ -58,6 +65,25 @@ const CreateCampaign = ({ close }) => {
     }
   }
 
+  // const onSubmit = async (data) => {
+  //   try {
+  //     const userRef = doc(db, 'users', user.uid);
+  //     const userDoc = await getDoc(userRef);
+  //     if(!userDoc.exists() && !userDoc?.data()?.user_id) {
+  //       toast.error('Authorization error. Please try again later.')
+  //       return;
+  //     }
+  //     data.user_id = userDoc.data().user_id
+  //     toast.promise(newCampaignMutation.mutateAsync(data), {
+  //       loading: 'Creating campaign...',
+  //       success: 'Campaign created successfully',
+  //       error: 'Failed to create campaign'
+  //     })
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
+  // }
+
   return (
     <div className="w-full p-4">
       <div className="flex items-start mb-8">
@@ -65,6 +91,7 @@ const CreateCampaign = ({ close }) => {
         variant="ghost"
           className="flex items-center text-blue-600 font-medium"
           onClick={close}
+          // onClick={navigate("/Campaigns")}
         >
           <ArrowLeft className="w-5 h-5" />
           Go Back
