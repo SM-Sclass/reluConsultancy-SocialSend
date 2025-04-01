@@ -14,7 +14,7 @@ import Breadcrumb from "../../../components/BreadCrumb";
 import Listing from "@/components/ReactTable";
 import { fetchTargetByFilterId } from "./Service/User.service";
 import { columns, SideTab } from "./helper";
-import SocialSearchImage from "../../../assets/SocialSearchImage.svg";
+import SocialSearchImage from "../../../assets/socialSearchImage.svg";
 import { SideTabApplyFilter } from "@/components/input/ApplyFilter";
 
 const SocialSearch = () => {
