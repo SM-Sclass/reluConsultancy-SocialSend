@@ -1,94 +1,82 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import * as z from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod';
-import { doc, getDoc } from 'firebase/firestore'
-import { auth, db } from '@/lib/firebase/config';
-import CampaignLogo from '../assets/campaign.svg';
-import { Input } from '@/components/ui/input';
-import { Form, FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { createCampaign } from '@/pages/View/Campaigns/Service/Campaign.service';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase/config";
+import CampaignLogo from "../assets/campaign.svg";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { createCampaign } from "@/pages/View/Campaigns/Service/Campaign.service";
 
 const campaignSchema = z.object({
-  campaign_name: z.string().min(3, 'Enter at least 3 characters'),
-})
+  campaign_name: z.string().min(3, "Enter at least 3 characters"),
+});
 
-const CreateCampaign = ({ close }) => {
-  const user = auth.currentUser
+const CreateCampaign = ({ close, getCampaigns }) => {
+  const user = auth.currentUser;
   const navigate = useNavigate();
   const form = useForm({
     resolver: zodResolver(campaignSchema),
     defaultValues: {
-      campaignName: '',
-    }
-  })
+      campaignName: "",
+    },
+  });
 
   const newCampaignMutation = useMutation({
-    mutationFn:createCampaign,
+    mutationFn: createCampaign,
     onSuccess: (result) => {
-      navigate("/Campaigns/newCampaign")
-      close()
+      // navigate("/Campaigns/newCampaign");
+      getCampaigns();
+      navigate("/Campaigns");
+      close();
     },
     onError: (error) => {
-      console.error(error)
-    }
-  })
-
-
-  console.log(user)
+      console.error(error);
+    },
+  });
 
   const onSubmit = async (data) => {
     try {
-      const userRef = doc(db, 'users', user.uid);
-      // const userDoc = await getDoc(userRef);
-      // if(!userDoc.exists() && !userDoc?.data()?.user_id) {
-      //   toast.error('Authorization error. Please try again later.')
-      //   return;
-      // }
-      // data.user_id = userDoc.data().user_id
-      toast.promise(newCampaignMutation.mutateAsync({
-        // user_id: user.uid,
-        user_id: "67dbcd214597acae7bdf3f6c",
-        campaign_name: data.campaign_name
-      }), {
-        loading: 'Creating campaign...',
-        success: 'Campaign created successfully',
-        error: 'Failed to create campaign'
-      })
+      const userRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userRef);
+      if (!userDoc.exists() && !userDoc.data().user_id) {
+        toast.error("Authorization error. Please try again later.");
+        return;
+      }
+      data.user_id = userDoc.data().user_id;
+      toast.promise(
+        newCampaignMutation.mutateAsync({
+          user_id: userDoc.data().user_id,
+          campaign_name: data.campaign_name,
+        }),
+        {
+          loading: "Creating campaign...",
+          success: "Campaign created successfully",
+          error: "Failed to create campaign",
+        }
+      );
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
-
-  // const onSubmit = async (data) => {
-  //   try {
-  //     const userRef = doc(db, 'users', user.uid);
-  //     const userDoc = await getDoc(userRef);
-  //     if(!userDoc.exists() && !userDoc?.data()?.user_id) {
-  //       toast.error('Authorization error. Please try again later.')
-  //       return;
-  //     }
-  //     data.user_id = userDoc.data().user_id
-  //     toast.promise(newCampaignMutation.mutateAsync(data), {
-  //       loading: 'Creating campaign...',
-  //       success: 'Campaign created successfully',
-  //       error: 'Failed to create campaign'
-  //     })
-  //   } catch (error) {
-  //     console.error(error)
-  //   }
-  // }
+  };
 
   return (
     <div className="w-full p-4">
       <div className="flex items-start mb-8">
         <Button
-        variant="ghost"
+          variant="ghost"
           className="flex items-center text-blue-600 font-medium"
           onClick={close}
           // onClick={navigate("/Campaigns")}
@@ -102,8 +90,12 @@ const CreateCampaign = ({ close }) => {
           <img src={CampaignLogo} alt="Campaigns" width={40} height={40} />
         </div>
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Let's create a new campaign!</h1>
-          <p className="text-gray-600 text-start">What would you like to name it?</p>
+          <h1 className="text-3xl font-bold mb-2">
+            Let's create a new campaign!
+          </h1>
+          <p className="text-gray-600 text-start">
+            What would you like to name it?
+          </p>
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -132,9 +124,7 @@ const CreateCampaign = ({ close }) => {
               >
                 Cancel
               </Button>
-              <Button
-                className="py-3 px-4 h-10 bg-indigo-500 text-white rounded-md font-medium hover:bg-indigo-600"
-              >
+              <Button className="py-3 px-4 h-10 bg-indigo-500 text-white rounded-md font-medium hover:bg-indigo-600">
                 Continue
               </Button>
             </div>
