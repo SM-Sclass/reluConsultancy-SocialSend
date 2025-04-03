@@ -32,6 +32,7 @@ function CampaignSchedule() {
   };
 
   return (
+    <div className="p-4 border rounded-sm w-full"> 
     <div className="max-w-8xl mx-auto p-4">
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left Panel */}
@@ -170,6 +171,7 @@ function CampaignSchedule() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   )
 }

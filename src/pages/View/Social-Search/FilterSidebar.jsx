@@ -1,38 +1,53 @@
-import React from 'react';
-import * as z from 'zod'
-import toast from 'react-hot-toast'
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod';
-import { RefreshCcw, Loader, Save } from 'lucide-react';
-import { setFilterId } from '@/store/filterStore';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Form, FormField, FormLabel, FormItem, FormControl, FormMessage } from '@/components/ui/form';
-import { MultiSelectDropdown } from '@/components/MultiSelectDropdown';
-import { TagInput } from '@/components/TagInput';
-import { filterUsers } from '@/pages/View/Social-Search/Service/Filter.service';
-
+import React from "react";
+import * as z from "zod";
+import toast from "react-hot-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { RefreshCcw, Loader, Save } from "lucide-react";
+import { setFilterId } from "@/store/filterStore";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormField,
+  FormLabel,
+  FormItem,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { MultiSelectDropdown } from "@/components/MultiSelectDropdown";
+import { TagInput } from "@/components/TagInput";
+import { filterUsers } from "@/pages/View/Social-Search/Service/Filter.service";
 
 const filterSchema = z.object({
-  social_platform: z.array(
-    z.enum(['Instagram', 'Twitter', 'TikTok', 'LinkedIn', 'Facebook', 'YouTube'])
-  ).nonempty('Select at least one social platform'),
-  filter_name: z.string().min(3, 'Enter at least 3 characters'),
-  hashtag: z.array(z.string()).nonempty('Provide at least one hashtag'),
-  gender: z.array(z.enum(['Male', 'Female', 'Non-Binary', 'Other'])).optional(),
+  social_platform: z
+    .array(
+      z.enum([
+        "Instagram",
+        "Twitter",
+        "TikTok",
+        "LinkedIn",
+        "Facebook",
+        "YouTube",
+      ])
+    )
+    .nonempty("Select at least one social platform"),
+  filter_name: z.string().min(3, "Enter at least 3 characters"),
+  hashtag: z.array(z.string()).nonempty("Provide at least one hashtag"),
+  gender: z.array(z.enum(["Male", "Female", "Non-Binary", "Other"])).optional(),
   age: z.number().optional(),
   followers: z.number().optional(),
-  keywords: z.array(z.string()).nonempty('Provide at least one keyword'),
+  keywords: z.array(z.string()).nonempty("Provide at least one keyword"),
   following_lists: z.array(z.string()).optional(),
   interests: z.array(z.string()).optional(),
   location: z.array(z.string()).optional(),
-})
+});
 
 const FilterSidebar = ({ table }) => {
   const initialValues = {
     social_platform: [],
-    filter_name: '',
+    filter_name: "",
     hashtag: [],
     gender: [],
     age: 0,
@@ -41,57 +56,56 @@ const FilterSidebar = ({ table }) => {
     following_lists: [],
     interests: [],
     location: [],
-  }
+  };
   const queryClient = useQueryClient();
   const form = useForm({
     resolver: zodResolver(filterSchema),
     defaultValues: initialValues,
-    mode: 'onChange',
-    reValidateMode: 'onBlur'
-  })
+    mode: "onChange",
+    reValidateMode: "onBlur",
+  });
 
   const filterMutation = useMutation({
     mutationFn: filterUsers,
     onSuccess: (result) => {
       // Store the filter ID returned from the API
-      const newFilterId = result.filter_id || '67cd8ea517b104152dc65c26';
+      const newFilterId = result.filter_id || "67cd8ea517b104152dc65c26";
       setFilterId(newFilterId);
 
       // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: ['filters'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredUserAccounts', newFilterId] });
-
+      queryClient.invalidateQueries({ queryKey: ["filters"] });
+      queryClient.invalidateQueries({
+        queryKey: ["filteredUserAccounts", newFilterId],
+      });
     },
     onError: (error) => {
-      console.error('Error fetching filtered users:', error);
-    }
+      console.error("Error fetching filtered users:", error);
+    },
   });
 
   const onSubmit = async (data) => {
     try {
-      data.user = "67dbcd214597acae7bdf3f6c",
-      toast.promise(filterMutation.mutateAsync(data), {
-        loading: 'Saving filter...',
-        success: 'Filter saved successfully!',
-        error: 'An error occurred while saving filter'
-      })
-      form.reset()
+      (data.user = "67dbcd214597acae7bdf3f6c"),
+        toast.promise(filterMutation.mutateAsync(data), {
+          loading: "Saving filter...",
+          success: "Filter saved successfully!",
+          error: "An error occurred while saving filter",
+        });
+      form.reset();
     } catch (error) {
-      console.error(error)
-
+      console.error(error);
     }
-  }
+  };
 
   const handleResetFilter = () => {
     // Reset table selection
     if (JSON.stringify(form.getValues()) === JSON.stringify(initialValues)) {
       table.resetRowSelection();
       setFilterId(null);
-      toast.success('Filters reset successfully!');
-    }
-    else{
+      toast.success("Filters reset successfully!");
+    } else {
       form.reset(initialValues);
-      toast.success('Form reset successfully!');
+      toast.success("Form reset successfully!");
     }
 
     // Reset filter ID if the form is back to initial state
@@ -106,7 +120,7 @@ const FilterSidebar = ({ table }) => {
               <h2 className="text-lg font-semibold">Filters</h2>
               <div className="flex">
                 <Button
-                type="button"
+                  type="button"
                   className="hover:bg-secondary rounded cursor-pointer w-fit"
                   onClick={handleResetFilter}
                   title="Reset filters"
@@ -114,7 +128,7 @@ const FilterSidebar = ({ table }) => {
                 >
                   <RefreshCcw className="w-5 h-5" />
                 </Button>
-                <Button
+                {/* <Button
                   type="submit"
                   className="hover:bg-secondary rounded text-blue-600 cursor-pointer"
                   title="Apply filters"
@@ -122,7 +136,7 @@ const FilterSidebar = ({ table }) => {
                   variant="ghost"
                 >
                   <Save className="w-5 h-5" />
-                </Button>
+                </Button> */}
                 <div className="p-1 rounded">
                   {filterMutation.isPending ? (
                     <Loader className="w-4 h-4 animate-spin" />
@@ -132,7 +146,7 @@ const FilterSidebar = ({ table }) => {
                 </div>
               </div>
             </div>
-            <div className='space-y-4'>
+            <div className="space-y-4">
               <FormField
                 control={form.control}
                 name="social_platform"
@@ -142,7 +156,14 @@ const FilterSidebar = ({ table }) => {
                     <FormControl>
                       <MultiSelectDropdown
                         title="Social Platform"
-                        options={['Instagram', 'Twitter', 'TikTok', 'LinkedIn', 'Facebook', 'YouTube']}
+                        options={[
+                          "Instagram",
+                          "Twitter",
+                          "TikTok",
+                          "LinkedIn",
+                          "Facebook",
+                          "YouTube",
+                        ]}
                         value={field.value}
                         onChange={field.onChange}
                       />
@@ -195,7 +216,7 @@ const FilterSidebar = ({ table }) => {
                     <FormControl>
                       <MultiSelectDropdown
                         title="Gender"
-                        options={['Male', 'Female', 'Non-Binary', 'Other']}
+                        options={["Male", "Female", "Non-Binary", "Other"]}
                         value={field.value}
                         onChange={field.onChange}
                       />
@@ -310,6 +331,17 @@ const FilterSidebar = ({ table }) => {
                   </FormItem>
                 )}
               />
+            </div>
+            <div className="mt-5">
+              <Button
+                type="submit"
+                className=" rounded bg-gray-300 hover:bg-gray-400 text-gray-900 cursor-pointer"
+                title="Apply filters"
+                disabled={filterMutation.isPending}
+                variant="ghost"
+              >
+                Save
+              </Button>
             </div>
           </form>
         </Form>

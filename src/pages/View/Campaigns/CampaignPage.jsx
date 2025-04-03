@@ -1,24 +1,42 @@
+import React, { useState } from "react";
+import { Routes, Route, NavLink } from "react-router-dom";
+import Breadcrumb from "../../../components/BreadCrumb";
+import Campaigns from "./Campaigns";
+import CampaignDetail from "./CampaignDetail";
+import CampaignLeads from "./CampaignLeads";
+import {
+  CampaignSchedule,
+  CampaignSequence,
+  CampaignOptions,
+  CampaignAnalytic,
+} from "@/components";
 
-import React, { useState } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import Breadcrumb from '../../../components/BreadCrumb'
-import Campaigns from './Campaigns'
-import CampaignDetail from './CampaignDetail';
+const Tabs = [
+  {
+    name: "Analytics",
+    path: "/Campaigns",
+  },
+  {
+    name: "Leads",
+    path: "/Campaigns/leads",
+  },
+  {
+    name: "Sequences",
+    path: "/Campaigns/sequences",
+  },
+  {
+    name: "Schedule",
+    path: "/Campaigns/schedule",
+  },
+  {
+    name: "Options",
+    path: "/Campaigns/options",
+  },
+];
 
 export default function CampaignPage() {
-  const [createCampaign, setCreateCampaign] = useState(false)
-  const [data, setData] = useState([{
-    "id": 1,
-    "name": "Campaign 1",
-    "status": "Active",
-    "progress": 80,
-    "sent": 100,
-    "click": 50,
-    "replied": 20,
-    "opportunity": 10
-  },
-  ])
-
+  const [createCampaign, setCreateCampaign] = useState(false);
+  
   return (
     <div>
       <Breadcrumb
@@ -27,18 +45,47 @@ export default function CampaignPage() {
         availableEntries="54"
         buttonName="Add Campaign"
       />
-      <div className='p-3 flex justify-center'>
-        <Routes>
-          <Route path="/" element={<Campaigns
-            createCampaign={createCampaign}
-            close={() => setCreateCampaign(false)}
-            data={data}
-          />
-          } />
-          <Route path="/:id" element={<CampaignDetail />} />
-        </Routes>
+      <div className="flex space-x-5 my-1 border-gray-100 border-b ">
+        <ul className="flex space-x-5">
+          {Tabs.map((route, index) => (
+            <li key={index}>
+              <NavLink
+                to={route.path}
+                end={route.path === route.path}
+                className={({ isActive }) =>
+                  `flex items-center justify-start px-4 py-2  transition ${
+                    isActive
+                      ? " font-semibold border-b-[2px] border-blue-500"
+                      : " text-black"
+                  }`
+                }
+              >
+                {route.name}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
       </div>
 
+      <div className="p-3 flex ">
+        <Routes>
+          <Route
+            index
+            element={
+              <Campaigns
+                createCampaign={createCampaign}
+                close={() => setCreateCampaign(false)}
+              />
+            }
+          />
+          <Route path=":id" element={<CampaignDetail />} />
+          <Route path="leads" element={<CampaignLeads />} />
+          <Route path="analytics" element={<CampaignAnalytic />} />
+          <Route path="sequences" element={<CampaignSequence />} />
+          <Route path="schedule" element={<CampaignSchedule />} />
+          <Route path="options" element={<CampaignOptions />} />
+        </Routes>
+      </div>
     </div>
-  )
+  );
 }

@@ -2,11 +2,12 @@ import { api } from "@/Services/Api";
 
 export const addSocialAccount = async (socialAccountData) => {
   try {
-    return
-    // const response = await api.post('/api/add_new_social_acc', socialAccountData);
-    // return response.data;
+    // return
+    const response = await api.post('/api/add_new_social_acc', socialAccountData);
+    return response.data;
   } catch (error) {
     console.error('Error in addSocialAccount:', error);
+    throw error
   }
 }
 

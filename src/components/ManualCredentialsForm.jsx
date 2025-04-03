@@ -1,75 +1,100 @@
-import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import * as z from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
-import { doc, getDoc } from 'firebase/firestore'
-import toast from 'react-hot-toast'
-import { addSocialAccount } from '@/pages/View/Social-Accounts/Service/SocialAccount.service';
-import { auth, db } from '@/lib/firebase/config';
-import { Form, FormField, FormLabel, FormItem, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { doc, getDoc } from "firebase/firestore";
+import toast from "react-hot-toast";
+import { addSocialAccount } from "@/pages/View/Social-Accounts/Service/SocialAccount.service";
+import { auth, db } from "@/lib/firebase/config";
+import {
+  Form,
+  FormField,
+  FormLabel,
+  FormItem,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const credentialsSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters long").nonempty(),
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters long")
+    .nonempty(),
   password: z.string().nonempty(),
-})
+});
 
 export default function ManualCredentialsForm({ platform, close }) {
   const [showPassword, setShowPassword] = useState(false);
-  const togglePasswordVisibility = () => setShowPassword(!showPassword);sender
-  const user = auth.currentUser
-  
+  // const togglePasswordVisibility = () => setShowPassword(!showPassword);sender
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  const user = auth.currentUser;
+
   const form = useForm({
     resolver: zodResolver(credentialsSchema),
     defaultValues: {
-      username: '',
-      password: ''
-    }
-  })
+      username: "",
+      password: "",
+    },
+  });
 
   const socialAccountMutation = useMutation({
     mutationFn: addSocialAccount,
     onSuccess: (result) => {
       setTimeout(() => {
-        console.log("result")
-      },3000)
+        console.log("result");
+      }, 3000);
     },
     onError: (error) => {
-      console.error('Error fetching filtered users:', error);
-    }
+      console.error("Error fetching filtered users:", error);
+    },
   });
 
   const onSubmit = async (data) => {
     try {
-      data.platform = platform
-      const userRef = doc(db, 'users', user.uid);
+      data.platform = platform;
+      const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);
 
       if (!userDoc.exists() || !userDoc.data().user_id) {
-        toast.error('Authorization error. Please try again later.')
+        toast.error("Authorization error. Please try again later.");
         return;
       }
-      data.user_id = userDoc.data().user_id
+      data.user_id = userDoc.data().user_id;
 
-      console.log(data)
-      // toast.promise(socialAccountMutation.mutateAsync(data), {
-      //   loading: 'Adding social account...',
-      //   success: 'Social account added successfully!',
-      //   error: 'An error occurred while adding social account'
-      // })
+      const payloadData = {
+        user_id: userDoc.data().user_id,
+        accounts: [
+          {
+            platform: platform,
+            username: data?.username,
+            password: data?.password,
+          },
+        ],
+      };
+
+      // console.log(data);
+      toast.promise(socialAccountMutation.mutateAsync(payloadData), {
+        loading: "Adding social account...",
+        success: "Social account added successfully!",
+        error: "An error occurred while adding social account",
+      });
+      close();
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   return (
     <div className="bg-background rounded-lg shadow-lg mx-auto w-80 sm:max-w-96 p-6 space-y-4">
-      <p className='text-lg font-bold text-center'>Enter {platform} Credentials</p>
+      <p className="text-lg font-bold text-center">
+        Enter {platform} Credentials
+      </p>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="username"
@@ -113,7 +138,7 @@ export default function ManualCredentialsForm({ platform, close }) {
               </FormItem>
             )}
           />
-          <div className='flex items-center justify-end space-x-3'>
+          <div className="flex items-center justify-end space-x-3">
             <Button
               type="button"
               onClick={close}
@@ -126,6 +151,7 @@ export default function ManualCredentialsForm({ platform, close }) {
               type="submit"
               className="bg-blue-600 text-white hover:bg-blue-700"
               disabled={socialAccountMutation.isPending}
+              // onClick={close}
             >
               Submit
             </Button>
@@ -133,5 +159,5 @@ export default function ManualCredentialsForm({ platform, close }) {
         </form>
       </Form>
     </div>
-  )
+  );
 }
