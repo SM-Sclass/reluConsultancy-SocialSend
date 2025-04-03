@@ -1,44 +1,37 @@
-import React, {useState, useEffect, useCallback} from 'react';
-import {
-  flexRender
-} from '@tanstack/react-table'
+import React, { useState, useEffect, useCallback } from "react";
+import { flexRender } from "@tanstack/react-table";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
-} from '@/components/ui/table'
-import { Skeleton } from './ui/skeleton';
-import { Button } from './ui/button';
-import { PlusIcon } from '@heroicons/react/24/outline';
+  TableRow,
+} from "@/components/ui/table";
+import { Skeleton } from "./ui/skeleton";
+import { Button } from "./ui/button";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
-const Listing = ({
-  columns,
-  table,
-  isPending = false,
-  className
-}) => {
+const Listing = ({ columns, table, isPending = false, className }) => {
   const [selectionState, setSelectionState] = useState({
     isAllSelected: false,
     hasSelectedRows: false,
-    selectedCount: 0
+    selectedCount: 0,
   });
 
   // Update selection state without causing render loops
   useEffect(() => {
     if (!table) return;
-    
+
     // Get current selection status
     const selectedCount = table.getFilteredSelectedRowModel().rows.length;
     const isAllSelected = table.getIsAllRowsSelected();
-    
+
     // Only update state if values have changed
     setSelectionState({
       isAllSelected,
       hasSelectedRows: selectedCount > 0,
-      selectedCount
+      selectedCount,
     });
   }, [table?.getState().rowSelection]);
 
@@ -55,13 +48,14 @@ const Listing = ({
     }
 
     // Extract data from the selected rows
-    const data = selectedRows.map(row => {
+    const data = selectedRows.map((row) => {
       const rowData = row.original;
       // Create an object with column headers as keys
       return columns.reduce((acc, column) => {
-        if (column.accessorKey && column.accessorKey !== 'select') {
+        if (column.accessorKey && column.accessorKey !== "select") {
           // Skip the checkbox column and use column accessor key for field names
-          acc[column.header || column.accessorKey] = rowData[column.accessorKey];
+          acc[column.header || column.accessorKey] =
+            rowData[column.accessorKey];
         }
         return acc;
       }, {});
@@ -71,26 +65,28 @@ const Listing = ({
     let csvContent = "";
 
     // Get all unique headers
-    const headers = Object.keys(data.reduce((acc, row) => {
-      Object.keys(row).forEach(key => acc[key] = true);
-      return acc;
-    }, {}));
+    const headers = Object.keys(
+      data.reduce((acc, row) => {
+        Object.keys(row).forEach((key) => (acc[key] = true));
+        return acc;
+      }, {})
+    );
 
     // Add header row
     csvContent += headers.join(",") + "\n";
 
     // Add data rows
-    data.forEach(row => {
-      const values = headers.map(header => {
+    data.forEach((row) => {
+      const values = headers.map((header) => {
         // Handle values with commas by wrapping in quotes
-        const value = row[header] != null ? row[header].toString() : '';
+        const value = row[header] != null ? row[header].toString() : "";
         return `"${value.replace(/"/g, '""')}"`;
       });
       csvContent += values.join(",") + "\n";
     });
 
     // Create and trigger download
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -100,11 +96,11 @@ const Listing = ({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  }
+  };
 
   return (
     <div className={`w-full flex flex-col space-y-2 ${className}`}>
-      <div className='flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 '>
+      <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 ">
         <Button
           variant="outline"
           size="sm"
@@ -134,7 +130,14 @@ const Listing = ({
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
-                        <TableHead key={header.id} className={header.id === 'select' ? 'text-center text-primary' : 'font-bold text-primary'}>
+                        <TableHead
+                          key={header.id}
+                          className={
+                            header.id === "select"
+                              ? "text-center text-primary"
+                              : "font-bold text-primary"
+                          }
+                        >
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -142,7 +145,7 @@ const Listing = ({
                               header.getContext()
                             )}
                         </TableHead>
-                      )
+                      );
                     })}
                   </TableRow>
                 ))}
@@ -152,17 +155,17 @@ const Listing = ({
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
+                      data-state={row.getIsSelected() && "selected"}
                     >
                       {row.getVisibleCells().map((cell) => {
                         return (
-                          <TableCell key={cell.id} >
+                          <TableCell key={cell.id}>
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()
                             )}
                           </TableCell>
-                        )
+                        );
                       })}
                     </TableRow>
                   ))
@@ -200,9 +203,8 @@ const Listing = ({
         </div>
       ) : (
         <div className="flex items-center justify-end space-x-2">
-
           <div className="flex-1 text-sm text-muted-foreground">
-            {table.getFilteredSelectedRowModel().rows.length} of{' '}
+            {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} row(s) selected.
           </div>
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
@@ -225,7 +227,7 @@ const Listing = ({
           </div>
         </div>
       )}
-      <div className='w-full flex mb-4 sm:mb-0 justify-end'>
+      <div className="w-full flex mb-4 sm:mb-0 justify-end">
         <Button
           variant="secondary"
           className="bg-blue-600 text-white cursor-pointer rounded-md hover:bg-blue-700 transition-colors"

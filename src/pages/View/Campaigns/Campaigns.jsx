@@ -93,9 +93,11 @@ function Campaigns({ createCampaign, close }) {
 
   return (
     <div className="p-4 border rounded-sm w-full">
+      
       {!createCampaign && (
         <Listing columns={columns} table={table} isPending={isLoading} />
       )}
+      
       {createCampaign && (
         <CreateCampaign getCampaigns={getCampaigns} close={close} />
       )}

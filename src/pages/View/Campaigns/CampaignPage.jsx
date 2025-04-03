@@ -4,35 +4,6 @@ import Breadcrumb from "../../../components/BreadCrumb";
 import Campaigns from "./Campaigns";
 import CampaignDetail from "./CampaignDetail";
 import CampaignLeads from "./CampaignLeads";
-import {
-  CampaignSchedule,
-  CampaignSequence,
-  CampaignOptions,
-  CampaignAnalytic,
-} from "@/components";
-
-const Tabs = [
-  {
-    name: "Analytics",
-    path: "/Campaigns",
-  },
-  {
-    name: "Leads",
-    path: "/Campaigns/leads",
-  },
-  {
-    name: "Sequences",
-    path: "/Campaigns/sequences",
-  },
-  {
-    name: "Schedule",
-    path: "/Campaigns/schedule",
-  },
-  {
-    name: "Options",
-    path: "/Campaigns/options",
-  },
-];
 
 export default function CampaignPage() {
   const [createCampaign, setCreateCampaign] = useState(false);
@@ -47,23 +18,6 @@ export default function CampaignPage() {
       />
       <div className="flex space-x-5 my-1 border-gray-100 border-b ">
         <ul className="flex space-x-5">
-          {Tabs.map((route, index) => (
-            <li key={index}>
-              <NavLink
-                to={route.path}
-                end={route.path === route.path}
-                className={({ isActive }) =>
-                  `flex items-center justify-start px-4 py-2  transition ${
-                    isActive
-                      ? " font-semibold border-b-[2px] border-blue-500"
-                      : " text-black"
-                  }`
-                }
-              >
-                {route.name}
-              </NavLink>
-            </li>
-          ))}
         </ul>
       </div>
 
@@ -79,11 +33,6 @@ export default function CampaignPage() {
             }
           />
           <Route path=":id" element={<CampaignDetail />} />
-          <Route path="leads" element={<CampaignLeads />} />
-          <Route path="analytics" element={<CampaignAnalytic />} />
-          <Route path="sequences" element={<CampaignSequence />} />
-          <Route path="schedule" element={<CampaignSchedule />} />
-          <Route path="options" element={<CampaignOptions />} />
         </Routes>
       </div>
     </div>

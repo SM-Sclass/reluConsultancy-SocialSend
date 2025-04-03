@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CampaignAnalytic from '../../../components/CampaignAnalytic';
-import CampaignLeads from '../../../components/CampaignLeads';
+// import CampaignLeads from '../../../components/CampaignLeads';
+import CampaignLeads from './CampaignLeads';
 import CampaignSequence from '../../../components/CampaignSequence';
 import CampaignSchedule from '../../../components/CampaignSchedule';
 import CampaignOptions from '../../../components/CampaignOptions';
@@ -10,20 +11,21 @@ import { useNavigate } from 'react-router';
 const CampaignDetail = () => {
   const [activeTab, setActiveTab] = useState('leads');
   const navigate = useNavigate();
-  // const tabs = [
-  //   { id: 'analytics', label: 'Analytics' },
-  //   { id: 'leads', label: 'Leads' },
-  //   { id: 'sequences', label: 'Sequences' },
-  //   { id: 'schedule', label: 'Schedule' },
-  //   { id: 'options', label: 'Options' }
-  // ];
+  const tabs = [
+    { id: 'analytics', label: 'Analytics' },
+    { id: 'leads', label: 'Leads' },
+    { id: 'sequences', label: 'Sequences' },
+    { id: 'schedule', label: 'Schedule' },
+    { id: 'options', label: 'Options' }
+  ];
   
   const renderTabContent = () => {
     switch(activeTab) {
       case 'analytics':
         return <CampaignAnalytic />;
       case 'leads':
-        return <CampaignLeads />;
+        // return <CampaignLeads />;
+        return <CampaignLeads />
       case 'sequences':
         return <CampaignSequence />;
       case 'schedule':
@@ -59,7 +61,7 @@ const CampaignDetail = () => {
         </button>
       </div>
       <div className="w-full">
-        {/* <nav className="flex w-full overflow-x-auto">
+        <nav className="flex w-full overflow-x-auto">
           {tabs.map(tab => (
             <Button
               key={tab.id}
@@ -74,7 +76,7 @@ const CampaignDetail = () => {
               {tab.label}
             </Button>
           ))}
-        </nav> */}
+        </nav>
       </div>
       <div className="p-4">
         {renderTabContent()}

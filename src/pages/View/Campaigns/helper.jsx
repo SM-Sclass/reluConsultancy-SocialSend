@@ -56,7 +56,7 @@ export const columns = [
       return (
         <div
           className="flex items-center gap-2 cursor-pointer text-blue-500 hover:underline"
-          onClick={() => navigate(`/Campaigns/${row.original.id}`)} // Navigate to dynamic route
+          onClick={() => navigate(`/Campaigns/${row.original._id}`)} // Navigate to dynamic route
         >
           {row.getValue('name')}
         </div>
