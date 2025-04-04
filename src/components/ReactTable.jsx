@@ -12,7 +12,7 @@ import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
-const Listing = ({ columns, table, isPending = false, className }) => {
+const Listing = ({ columns, table, isPending = false, className, disableExport=false }) => {
   const [selectionState, setSelectionState] = useState({
     isAllSelected: false,
     hasSelectedRows: false,
@@ -230,7 +230,7 @@ const Listing = ({ columns, table, isPending = false, className }) => {
       <div className="w-full flex mb-4 sm:mb-0 justify-end">
         <Button
           variant="secondary"
-          className="bg-blue-600 text-white cursor-pointer rounded-md hover:bg-blue-700 transition-colors"
+          className={`bg-blue-600 text-white cursor-pointer rounded-md hover:bg-blue-700 transition-colors ${disableExport ? "hidden":""}`}
           onClick={handleRowSelection}
           disabled={!selectionState.hasSelectedRows}
         >

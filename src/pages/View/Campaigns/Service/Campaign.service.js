@@ -16,6 +16,15 @@ export const getCampaign = async (campaignData) => {
     const response = await api.get(`/api/create_campaign/${campaignData}`);
     return response.data;
   } catch (error) {
-    console.error('Error in addCampaign:', error);
+    console.error('Error in getCampaign:', error);
+  }
+}
+
+export const getCampaignLeads = async (campaignData) => {
+  try {
+    const response = await api.get(`api/get_leads/${campaignData}`)
+    return response.data;
+  } catch (error) {
+    console.log("Error in getCampaign leads:", error)
   }
 }

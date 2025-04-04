@@ -33,6 +33,8 @@ const SocialSearch = () => {
   const [openNewFilter, setOpenNewFilter] = useState(false);
 
   const [isSideTabOpen, setIsSideTabOpen] = useState(false);
+
+
   const handleBreadcrumbClick = () => {
     // setIsSideTabOpen(true);
     setOpenNewFilter(false);
