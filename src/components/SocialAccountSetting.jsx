@@ -32,6 +32,7 @@ function SocialAccountSetting({ onClose, data, isPending }) {
       follow_limit: data?.daily_connections || 0,
       like_limit: data?.daily_likes || 0,
       dm_limit: data?.daily_messages || 0,
+      comment_limit : data?.daily_comments || 1,
     }
   })
 
@@ -187,6 +188,29 @@ function SocialAccountSetting({ onClose, data, isPending }) {
                         field.onChange(parseInt(e.target.value))
                       }
                       placeholder="DM Limit"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-start" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="comment_limit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex flex-col items-start justify-center">
+                    <span className='text-start text-sm'>Daily Direct Comment Limit</span>
+                    <span className='text-start text-xs'>Recommended Limit is 30</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      value={field.value}
+                      onChange={(e) =>
+                        field.onChange(parseInt(e.target.value))
+                      }
+                      placeholder="DComment Limit"
                     />
                   </FormControl>
                   <FormMessage className="text-start" />
