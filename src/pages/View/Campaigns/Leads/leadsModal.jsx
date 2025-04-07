@@ -64,7 +64,6 @@ const SocialSearchModal = ({
     }));
 
   const setPayloadData = () => {
-    console.log("clicked me", payloadData);
     setLeadsData(payloadData);
     setIsOpen(false);
   };

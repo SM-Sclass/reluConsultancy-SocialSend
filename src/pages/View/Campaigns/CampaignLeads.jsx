@@ -96,75 +96,6 @@ export default function CampaignLeads() {
     createLeads();
   };
 
-
-  // const getCampaignLeads = async (campaignId) => {
-  //   return toast.promise(
-  //     api.get(`api/get_leads/${campaignId}`).then((res) => res.data),
-  //     {
-  //       loading: "Fetching campaign leads...",
-  //       success: "Leads fetched successfully!",
-  //       // error: "Failed to fetch leads.",
-  //     }
-  //   );
-  // };
-
-  // const createLeadsPayload = {
-  //   campaign_id: campaignId,
-  //   leads: leadsData,
-  // };
-
-  // const createLeads = async () => {
-  //   try {
-  //     const response = await api.post("api/generate_leads", createLeadsPayload);
-  //     getCampaignLeads(campaignId); // Refetch leads after creation
-  //     console.log(response);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // // Fetch campaign leads using React Query
-  // const {
-  //   data: leads,
-  //   isLoading,
-  //   error,
-  // } = useQuery({
-  //   queryKey: ["campaignLeads", campaignId],
-  //   queryFn: () => getCampaignLeads(campaignId),
-  //   enabled: !!campaignId, // Only run if campaignId exists
-  // });
-
-
-  // const table = useReactTable({
-  //   data: leads?.leads || [],
-  //   columns: columns,
-  //   onSortingChange: setSorting,
-  //   onColumnFiltersChange: setColumnFilters,
-  //   getCoreRowModel: getCoreRowModel(),
-  //   getPaginationRowModel: getPaginationRowModel(),
-  //   getSortedRowModel: getSortedRowModel(),
-  //   getFilteredRowModel: getFilteredRowModel(),
-  //   onColumnVisibilityChange: setColumnVisibility,
-  //   onRowSelectionChange: setRowSelection,
-  //   onPaginationChange: setPagination,
-  //   getRowId: (row) => row.id,
-  //   state: {
-  //     sorting,
-  //     columnFilters,
-  //     columnVisibility,
-  //     rowSelection,
-  //     pagination,
-  //   },
-  // });
-
-  // const handleCreateLeads = () => {
-  //   if (leadsData?.length === 0) {
-  //     toast.error("No leads data to create!");
-  //     return;
-  //   }
-  //   createLeads();
-  // };
-
   return (
     <div className="p-4 rounded-sm w-full">
       {leads?.leads?.length > 0 && (
@@ -224,7 +155,7 @@ export default function CampaignLeads() {
                   <div
                     onClick={handleCreateLeads}
                     className={`${
-                      leadsData?.length > 0 ? "bg-green-200 px-5 py-2" : "hidden"
+                      leadsData?.length > 0 ? "bg-green-200 px-5 py-2 cursor-pointer" : "hidden"
                     } `}
                   >
                     Add Selected Data
