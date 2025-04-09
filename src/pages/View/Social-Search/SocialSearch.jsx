@@ -94,7 +94,7 @@ const SocialSearch = () => {
             className="h-[200px] w-[300px] bg-cover"
             alt=""
           />
-          <div
+          {/* <div
             className=" bg-gray-50 hover:bg-gray-500 px-5 py-2 rounded-2xl cursor-pointer"
             onClick={() => setOpenNewFilter(true)}
           >
@@ -103,8 +103,8 @@ const SocialSearch = () => {
           <p className="font-normal text-sm my-2 pb-5 border-gray-50 border-b-[1px]">
             Start your search by applying filters or directly type your query
             below. You can also use presets.
-          </p>
-          <div className="my-5 grid grid-cols-2 w-full px-10 ">
+          </p> */}
+          <div className="my-5  w-full px-10 ">
             <div className="bg-white/90">
             <SideTabApplyFilter
               isOpen={isSideTabOpen}

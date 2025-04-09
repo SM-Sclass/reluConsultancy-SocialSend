@@ -90,6 +90,7 @@ export const SideTabApplyFilter = ({
           {/* Header */}
           <div className="p-4 border-b flex items-center justify-between dark:bg-black/40">
             <h2 className="text-xl font-bold text-primary">Saved Filters</h2>
+            <button className="px-2 py-2 bg-green-200 w-[200px] rounded-md cursor-pointer" onClick={() => setOpenNewFilter(true)}>Create new filter</button>
           </div>
 
           <div className="p-4 space-y-1">
@@ -164,8 +165,11 @@ export const SideTabApplyFilter = ({
             )}
 
             {filteredData && filteredData.length === 0 && (
-              <div className="text-center py-8 text-primary bg-black/10 dark:bg-white/10 rounded-lg">
+              <div className="flex flex-col space-y-5 items-center w-full ">
+                <button className="px-2 py-2 bg-green-200 w-[200px] rounded-md cursor-pointer" onClick={() => setOpenNewFilter(true)}>Create new filter</button>
+              <div className="text-center py-8 w-full text-primary bg-black/10 dark:bg-white/10 rounded-lg">
                 No saved filters found.
+              </div>
               </div>
             )}
           </div>

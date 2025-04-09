@@ -16,19 +16,14 @@ const DeleteModal = ({
   getCampaigns
 }) => {
 
-    const user = auth.currentUser;
     const navigate = useNavigate();
 
     const newCampaignMutation = useMutation({
         mutationFn: deleteCampaign,
         onSuccess: (result) => {
-          console.log('i am inside success section', undefined);
-          
           getCampaigns();
           navigate("/Campaigns");
           setSelectedRowData(null)
-          setOpenEditModal(false);
-        //   close();
         },
         onError: (error) => {
           console.error(error);
@@ -36,7 +31,6 @@ const DeleteModal = ({
       });
 
     const handleDelete = async (data) => {
-      console.log(selectedRowData)
       try {
         toast.promise(
           newCampaignMutation.mutateAsync({

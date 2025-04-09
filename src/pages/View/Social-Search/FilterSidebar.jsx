@@ -42,6 +42,8 @@ const filterSchema = z.object({
   following_lists: z.array(z.string()).optional(),
   interests: z.array(z.string()).optional(),
   location: z.array(z.string()).optional(),
+  scrape_limit: z.number().optional(),
+  scrape_bulk: z.boolean(),
 });
 
 const FilterSidebar = ({ table }) => {
@@ -56,6 +58,8 @@ const FilterSidebar = ({ table }) => {
     following_lists: [],
     interests: [],
     location: [],
+    scrape_limit: 0,
+    scrape_bulk: false,
   };
   const queryClient = useQueryClient();
   const form = useForm({
@@ -70,6 +74,7 @@ const FilterSidebar = ({ table }) => {
     onSuccess: (result) => {
       // Store the filter ID returned from the API
       const newFilterId = result.filter_id || "67cd8ea517b104152dc65c26";
+
       setFilterId(newFilterId);
 
       // Invalidate relevant queries
@@ -328,6 +333,44 @@ const FilterSidebar = ({ table }) => {
                       />
                     </FormControl>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                contorl={form.control}
+                name="scrape_limit"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>scrape limit</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        value={field.value}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value))
+                        }
+                        placeholder="scrape_limit"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                contorl={form.control}
+                name="scrape_bulk"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>scrape bulk</FormLabel>
+                    <FormControl>
+                      <Input
+                        // value={field.value}
+                        disabled={true}
+                        value={false}
+                        onChange={field.onChange}
+                        placeholder="Give your filter a name"
+                      />
+                    </FormControl>
+                    <FormMessage className="text-start" />
                   </FormItem>
                 )}
               />

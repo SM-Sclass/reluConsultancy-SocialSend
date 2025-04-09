@@ -1,4 +1,5 @@
 import { api } from "@/Services/Api";
+import toast from "react-hot-toast";
 
 export const createCampaign = async (campaignData) => {
   try {
@@ -9,24 +10,48 @@ export const createCampaign = async (campaignData) => {
   }
 };
 
+export const createOptions = async (payload) => {
+  try {
+    const response = await api.post("/api/add_options", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error in add options:", error);
+    toast.error(error?.response?.data?.result);
+    throw new Error(error);
+  }
+};
+
+export const getCampaignOptions = async (campaignData) => {
+
+  try {
+    // const response = await api.get(`/api/add_options/${campaignData}`);
+    const response = await api.get(`/api/add_options/`, {
+      params: { campaign_id: campaignData },
+    });
+    return response.data;
+  } catch (error) {
+    console.log("Error in getCampaign leads:", error);
+  }
+};
+
 export const editCampaign = async (campaignData) => {
   try {
     const response = await api.put("/api/create_campaign", campaignData);
     return response.data;
   } catch (error) {
-    console.error("Error in addCampaign:", error);
+    console.error("Error in edit Campaign:", error);
   }
 };
 
 export const deleteCampaign = async (campaignData) => {
   try {
-    console.log(campaignData);
-    const response = await api.delete(`/api/create_campaign`,campaignData);
+    const response = await api.delete(`/api/create_campaign`, {
+      data: campaignData,
+    });
     return response.data;
   } catch (error) {
-    console.error("Error in deleteCampaign:", error);
+    console.error("Error in delete Campaign:", error);
     throw new Error(error);
-    
   }
 };
 
