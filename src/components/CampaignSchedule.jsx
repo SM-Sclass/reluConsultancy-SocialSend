@@ -5,12 +5,13 @@ import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import { Button } from "./ui/button";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "./ui/calendar";
+import { useParams } from "react-router";
 
 function CampaignSchedule() {
   const [date, setDate] = useState(null);
   const [scheduleName, setScheduleName] = useState("New Schedule");
-  // const [startDate, setStartDate] = useState('Dec 25, 2024');
-  // const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState('Dec 25, 2024');
+  const [endDate, setEndDate] = useState('');
   const [fromTime, setFromTime] = useState("7:00 PM");
   const [toTime, setToTime] = useState("9:00 PM");
   const [timeZone, setTimeZone] = useState("Eastern Time Zone");
@@ -23,6 +24,7 @@ function CampaignSchedule() {
     Saturday: false,
     Sunday: false,
   });
+  const {id} = useParams();
 
   const handleDayToggle = (day) => {
     setSelectedDays({
@@ -30,6 +32,21 @@ function CampaignSchedule() {
       [day]: !selectedDays[day],
     });
   };
+
+  const payload = {
+    campaign_id: id,
+    start_date: startDate,
+    end_date: endDate,
+    schedule_name: scheduleName,
+    timing_info:{
+      timing_from: fromTime,
+      timing_to: toTime,
+    },
+    timezone: timeZone,
+    days: Object.keys(selectedDays).filter((day) => selectedDays[day]),
+  }
+
+console.log('kkkkkkkkkk',payload)
 
   return (
     <div className="p-4 border rounded-sm w-full">

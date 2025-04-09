@@ -21,6 +21,19 @@ export const createOptions = async (payload) => {
   }
 };
 
+export const createCampLeads = async (payload) => {
+  try {
+    const response = await api.post("/api/generate_leads", payload);
+    toast.success("Leads generated successfully!");
+    return response.data;
+  } catch (error) {
+    console.error("Error in add options:", error);
+    toast.error(error?.response?.data?.result);
+    throw new Error(error);
+  }
+};
+      // const res = await api.post("api/generate_leads", payload);
+
 export const getCampaignOptions = async (campaignData) => {
 
   try {
