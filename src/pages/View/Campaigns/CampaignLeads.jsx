@@ -17,6 +17,9 @@ import {
 } from "@tanstack/react-table";
 import Listing from "@/components/ReactTable";
 import SocialSearchModal from "./Leads/leadsModal";
+import { useRef } from "react";
+import { Instagram } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CampaignLeads() {
   const [openAddLeads, setOpenAddLeads] = useState(false);
@@ -28,6 +31,66 @@ export default function CampaignLeads() {
   const [rowSelection, setRowSelection] = useState({});
   let [isOpenModal, setIsOpenModal] = useState(false);
   const [leadsData, setLeadsData] = useState([]);
+
+  const columns = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          className="text-primary border border-neutral-500"
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          className="text-primary border border-neutral-500"
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "username",
+      header: "Username",
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center  gap-2">
+            {row.getValue("username")}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center  gap-2">
+            {row.getValue("status")}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "platform",
+      header: "Platform",
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center  gap-2">
+            {row.getValue("platform")}
+          </div>
+        );
+      },
+    },
+  ];
 
   const getCampaignLeads = async (campaignId) => {
     const res = await api.get(`api/get_leads/${campaignId}`);
@@ -47,7 +110,6 @@ export default function CampaignLeads() {
     onError: () => toast.error("Failed to fetch leads."),
   });
 
-
   const { mutate: createLeads, isPending: isCreatingLeads } = useMutation({
     mutationFn: async () => {
       const payload = {
@@ -64,7 +126,6 @@ export default function CampaignLeads() {
     },
     onError: () => toast.error("Failed to create leads."),
   });
-
 
   const table = useReactTable({
     data: leads?.leads || [],
@@ -102,7 +163,21 @@ export default function CampaignLeads() {
         <div className="">
           {leads && leads?.leads?.length > 0 && (
             <div className="">
-              <Listing columns={columns} table={table} isPending={false}  />
+              <div>
+                <select
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    table.setColumnFilters([
+                      ...(value ? [{ id: "platform", value }] : []),
+                    ]);
+                  }}
+                >
+                  <option value="">All Platforms</option>
+                  <option value="Instagram">Instagram</option>
+                  <option value="Facebook">Facebook</option>
+                </select>
+              </div>
+              <Listing columns={columns} table={table} isPending={false} />
             </div>
           )}
         </div>
@@ -155,7 +230,9 @@ export default function CampaignLeads() {
                   <div
                     onClick={handleCreateLeads}
                     className={`${
-                      leadsData?.length > 0 ? "bg-green-200 px-5 py-2 cursor-pointer" : "hidden"
+                      leadsData?.length > 0
+                        ? "bg-green-200 px-5 py-2 cursor-pointer"
+                        : "hidden"
                     } `}
                   >
                     Add Selected Data

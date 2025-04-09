@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useState } from 'react';
 
-const ProgressBar = ({ progress }) => {
+export const ProgressBar = ({ progress }) => {
   const getProgressColor = (value) => {
     if (value < 50) return 'bg-orange-500';
     else if (value >= 80) return 'bg-green-500';
