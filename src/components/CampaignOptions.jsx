@@ -1,5 +1,8 @@
 import { auth, db } from "@/lib/firebase/config";
-import { createOptions, getCampaignOptions } from "@/pages/View/Campaigns/Service/Campaign.service";
+import {
+  createOptions,
+  getCampaignOptions,
+} from "@/pages/View/Campaigns/Service/Campaign.service";
 import { useMutation } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -7,14 +10,6 @@ import { useNavigate, useParams } from "react-router";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormField,
-  FormLabel,
-  FormItem,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
 import { doc, getDoc } from "@firebase/firestore";
 
 function CampaignOptions() {
@@ -50,7 +45,7 @@ function CampaignOptions() {
 
   const onSubmit = async () => {
     if (!accountValue) {
-    return  toast.error("Please add at least one account.");
+      return toast.error("Please add at least one account.");
     }
     try {
       const userRef = doc(db, "users", user.uid);
@@ -64,7 +59,7 @@ function CampaignOptions() {
         newOptionsMutation.mutateAsync({
           campaign_id: id,
           user_id: userDoc.data().user_id,
-          social_accounts: accountValue.split(','),
+          social_accounts: accountValue.split(","),
           message_on_reply_flag: stopOnReply,
         })
       );
@@ -73,9 +68,16 @@ function CampaignOptions() {
     }
   };
 
-  // useEffect(() => {
-  //  getCampaignOptions(id) 
-  // },[])
+  const GetDefaultData = async () => {
+    const data = await getCampaignOptions(id);
+    if (data?.social_accounts?.length > 0) {
+      setAccountValue(data?.social_accounts.join(", "));
+    }
+  };
+
+  useEffect(() => {
+    GetDefaultData();
+  }, []);
 
   return (
     <div className="w-full p-4 = rounded-lg shadow">

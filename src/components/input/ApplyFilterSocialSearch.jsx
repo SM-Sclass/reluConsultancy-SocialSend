@@ -67,7 +67,6 @@ export const ApplyFilterSocialSearch = ({
         filter_id: selectedFilter,
         campaign_id: id,
       };
-      console.log({ payload });
       createCampLeads(payload);
       navigate("/campaigns");
     } catch (err) {

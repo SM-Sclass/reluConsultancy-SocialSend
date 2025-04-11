@@ -21,6 +21,33 @@ export const createOptions = async (payload) => {
   }
 };
 
+export const createSchedule = async (payload) => {
+  try {
+    const response = await api.post("/api/new_schedule", payload);
+    console.log(response);
+    response?.data?.error
+      ? toast?.error(response?.data?.error)
+      : toast.success("Schedule added successfully");
+    return response.data;
+  } catch (error) {
+    if (error?.response?.data?.error) {
+      toast.error(error.response.data.error);
+    } else {
+      console.error(error)
+    }
+  }
+};
+
+export const getScheduleData = async (payload) => {
+  try {
+    const response = await api.get(`/api/get_schedule/${payload}`);
+    return response.data;
+  } catch (error) {
+    // console.error(error);
+    throw new Error(error);
+  }
+};
+
 export const createCampLeads = async (payload) => {
   try {
     const response = await api.post("/api/generate_leads", payload);
@@ -32,15 +59,10 @@ export const createCampLeads = async (payload) => {
     throw new Error(error);
   }
 };
-      // const res = await api.post("api/generate_leads", payload);
 
 export const getCampaignOptions = async (campaignData) => {
-
   try {
-    // const response = await api.get(`/api/add_options/${campaignData}`);
-    const response = await api.get(`/api/add_options/`, {
-      params: { campaign_id: campaignData },
-    });
+    const response = await api.get(`/api/get_options/${campaignData}`);
     return response.data;
   } catch (error) {
     console.log("Error in getCampaign leads:", error);
